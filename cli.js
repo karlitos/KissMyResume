@@ -12,6 +12,7 @@ const flatTheme = require('jsonresume-theme-flat');
 
 const { logInfo, logSuccess } = require('./log');
 const build = require('./build');
+const { parseResumeFromSource } = require('./parse');
 const { validateResume } = require('./validate');
 
 const DEFAULT_OUTPUT_PATH = './out';
@@ -157,9 +158,14 @@ program.command('new', 'Create a new resume in JSON Resume format.')
 program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
 	.action((args, options) => {
+		try {
+			const sourcePath = path.resolve(process.cwd(), args.source );
+			const {resume, type} = parseResumeFromSource(sourcePath);
+			validateResume(resume, type);
+		} catch(err) {
+			logError(`Resume validation failed! Reason: ${err}`)
+		}
 
-		const sourcePath = path.resolve(process.cwd(), args.source );
-		validateResume(sourcePath);
 	});
 
 program.parse(process.argv);
