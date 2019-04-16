@@ -24,14 +24,14 @@ The project is still WIP and in very early stage. It targets following shortcomi
 
 ### To do
 
-* [] Resume validation (JSON-Resume, FRESH)
-* [] Resume conversion  (JSON-Resume ⟷ FRESH)
-* [] Support for FRESH resumes through conversion
-* [] Empty resume initialization (_init_)
-* [] Resume HTML live preview (_serve_)
-* [] Resume analysis
-* [] Resume editor (live preview + [Json editor](https://github.com/josdejong/jsoneditor))
-* [] ...
+* [ ] Resume validation (JSON-Resume, FRESH)
+* [ ] Resume conversion  (JSON-Resume ⟷ FRESH)
+* [ ] Support for FRESH resumes through conversion
+* [ ] Empty resume initialization (_init_)
+* [ ] Resume HTML live preview (_serve_)
+* [ ] Resume analysis
+* [ ] Resume editor (live preview + [Json editor](https://github.com/josdejong/jsoneditor))
+* [ ] ...
 
 ## Getting Started
 
