@@ -14,6 +14,7 @@ The project is still WIP and in very early stage. It targets following shortcomi
  
 * [x] CLI - implemented with the [Caporal.js](https://github.com/mattallty/Caporal.js) framework.
 * [x] Support for resumes in [JSON-resume](https://jsonresume.org/) format
+* [x] Support for [Json-resume themes](https://jsonresume.org/themes/) 
 * [x] Export in all formats without the necessity for any 3rd party libraries/tools
 * [x] Export to HTML
 * [x] Export to PDF and PNG utilizing the [puppeteer](https://github.com/GoogleChrome/puppeteer) Headless Chrome Node API 
@@ -25,9 +26,12 @@ The project is still WIP and in very early stage. It targets following shortcomi
 
 * [] Resume validation (JSON-Resume, FRESH)
 * [] Resume conversion  (JSON-Resume ⟷ FRESH)
-* [] Resume HTML liuve preview (_resume serve_)
+* [] Support for FRESH resumes through conversion
+* [] Empty resume initialization (_init_)
+* [] Resume HTML live preview (_serve_)
 * [] Resume analysis
 * [] Resume editor (live preview + [Json editor](https://github.com/josdejong/jsoneditor))
+* [] ...
 
 ## Getting Started
 
@@ -66,5 +70,9 @@ The default theme for the resume is the [flat-theme](https://github.com/erming/j
 
 The theme must expose a __render__ method returning the the HTML markup in its entry-point file. The theme can expose a __renderAsync__ method returning a Promise resolving to HTML Markup. With this, the theme will be still compatible with the HackMyResume and resume-cli tools.
 
+Export to Docx is very basic and supports images as long they are encoded in Base64 and included within the HTML markup `<img src="data:image/gif;base64,R0lGOD ...` 
+
+My [mocha-responsive](https://github.com/karlitos/jsonresume-theme-mocha-responsive) theme supports __async rendering__ and inline __Base64 encoded__ profile pictures, give it a shot!
+ 
 ## License
 MIT. Go crazy. See LICENSE.md for details.
