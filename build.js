@@ -8,7 +8,7 @@ const HtmlDocx = require('html-docx-js');
 
 const promiseFinally = require('promise.prototype.finally');
 
-const { parseJsonResumeFromSource } = require('./parse');
+const { parseResumeFromSource } = require('./parse');
 const { logSuccess, logError } = require('./log');
 
 // Add `finally()` to `Promise.prototype`
@@ -123,7 +123,7 @@ const exportToMultipleFormats = async (source, name, outputPath, theme, outputFo
 		// Do not bother rendering when no export will be done
 		if (Object.keys(formatsToExport).length < 1) { return }
 
-		const resumeJson = parseJsonResumeFromSource(source);
+		const resumeJson = parseResumeFromSource(source).resume;
 
 		const markup = theme.renderAsync ? await theme.renderAsync(resumeJson) : theme.render(resumeJson);
 
@@ -151,7 +151,7 @@ const exportToMultipleFormats = async (source, name, outputPath, theme, outputFo
 // Common steps for most export functions
 const createMarkupFromSource = async (source, theme) => {
 	try {
-		const resumeJson = parseJsonResumeFromSource(source);
+		const resumeJson = parseResumeFromSource(source).resume;
 		return theme.renderAsync ? await theme.renderAsync(resumeJson) : theme.render(resumeJson);
 	} catch(err) {
 		throw err;
@@ -183,7 +183,7 @@ module.exports = {
 	},
 	exportResumeToYaml: (source, name, outputPath, theme) => {
 		try {
-			exportToYaml(parseJsonResumeFromSource(source), name, outputPath);
+			exportToYaml(parseResumeFromSource(source).resume, name, outputPath);
 		} catch (err) {
 			logError(`Export to YAML failed! Reason: ${err}`)
 		}

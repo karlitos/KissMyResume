@@ -1,9 +1,13 @@
-const jsonResumeValidator = require('resume-schema');
-const freshResumeValidator = require('fresh-resume-validator');
+const jsonResumeSchema = require('./schemes/json-resume-schema_0.0.0');
+const freshResumeSchema = require('./schemes/fresh-resume-schema_1.0.0-beta');
+const ZSchema = require('z-schema');
+const { logInfo, logSuccess, logError } = require('./log');
 
 const RESUME_TYPE_JSON = 'jrs';
 const RESUME_TYPE_FRESH = 'fresh';
 const RESUME_TYPE_UNKNOWN = 'unk';
+
+const validator = new ZSchema();
 
 const getResumeType = (resume) => {
 	if (resume.meta && resume.meta.format) { //&& resume.meta.format.substr(0, 5).toUpperCase() == 'FRESH'
@@ -15,32 +19,30 @@ const getResumeType = (resume) => {
 	}
 };
 
-const isValidJsonResume = (resume) => {
-	return jsonResumeValidator.validate(resume);
-};
-
-const isValidFreshResume = (resume) => {
-	const result = freshResumeValidator.isValid(resume);
-
-	console.log('result', result);
-
-	return result;
-	/*
-	if (freshResumeValidator.isValid(resume)) {
-		return true
+const validateJsonResume = (resume) => {
+	const valid = validator.validate(resume, jsonResumeSchema);
+	if (!valid) {
+		logInfo('--- Your resume contains errors ---');
+		for (const validationError of validator.getLastErrors()) {
+			logError(`#    ${validationError.message} in ${validationError.path}`);
+		}
 	} else {
-		console.log(freshResumeValidator.lastError);
-		return false;
+		logSuccess('Valid resume in Json-resume format.')
 	}
-	*/
+
 };
 
-const isValidResume = (resume) => {
-	if (getResumeType(resume) === RESUME_TYPE_UNKNOWN) {
-		return false;
-	}
 
-	return isValidJsonResume(resume) || isValidFreshResume(resume);
+const validateFreshResume = (resume) => {
+	const valid = validator.validate(resume, freshResumeSchema);
+	if (!valid) {
+		logInfo('--- Your resume contains errors ---');
+		for (const validationError of validator.getLastErrors()) {
+			logError(`#    ${validationError.message} in ${validationError.path}`);
+		}
+	} else {
+		logSuccess('Valid resume in FRESH format.')
+	}
 };
 
 
@@ -49,7 +51,18 @@ module.exports = {
 	RESUME_TYPE_FRESH,
 	RESUME_TYPE_UNKNOWN,
 	getResumeType,
-	isValidJsonResume,
-	isValidFreshResume,
-	isValidResume
+	validateResume: (source) => {
+		try {
+			const parsedResume = require('./parse').parseResumeFromSource(source);
+			if (parsedResume.type === RESUME_TYPE_JSON) {
+				validateJsonResume(parsedResume.resume);
+			} else if (parsedResume.type === RESUME_TYPE_FRESH) {
+				validateFreshResume(parsedResume.resume)
+			} else {
+				throw new Error('Unsupported resume type!')
+			}
+		} catch(err) {
+			logError(`Resume validation failed! Reason: ${err}`)
+		}
+	},
 };

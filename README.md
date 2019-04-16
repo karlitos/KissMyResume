@@ -6,9 +6,11 @@ The project is still WIP and in very early stage. It targets following shortcomi
 * missing support for asynchronous template rendering (1,2)
 * PDF export relying on 3rd party tools (1)
 * exported PDF looking differently than HTML printed as PDF (1)
-* no support for local themes (2) 
+* no support for local themes (2)
 
 ## Current status
+
+To provide best support for the [broad variety of 3rd party themes](https://www.npmjs.com/search?q=jsonresume-theme) the [official release (0.0.0)](https://github.com/jsonresume/resume-schema/releases/tag/0.0.0) of Json-resume schema is supported and used for validation. 
 
 ### Currently supported
  
@@ -21,10 +23,10 @@ The project is still WIP and in very early stage. It targets following shortcomi
 * [x] Export to DOCX with the [html-docx-js](https://github.com/evidenceprime/html-docx-js) library
 * [x] Export to YAML with the [json2yaml](https://git.coolaj86.com/coolaj86/json2yaml.js) utility
 * [x] Export to all formats at once
+* [x] Resume validation (JSON-Resume, FRESH)
 
 ### To do
 
-* [ ] Resume validation (JSON-Resume, FRESH)
 * [ ] Resume conversion  (JSON-Resume ⟷ FRESH)
 * [ ] Support for FRESH resumes through conversion
 * [ ] Empty resume initialization (_init_)
@@ -40,8 +42,28 @@ The project is still WIP and in very early stage. It targets following shortcomi
 ## Usage
 
 ```bash
-cli.js 0.5.0
+cli.js 0.6.0
 
+   USAGE
+
+     cli.js <command> [options]
+
+   COMMANDS
+
+     build <source>         Build your resume to the destination format(s).
+     validate <source>      Validate structure and syntax of your resume.
+     help <command>         Display help for a specific command
+
+   GLOBAL OPTIONS
+
+     -h, --help         Display help
+     -V, --version      Display version
+     --no-color         Disable colors
+     --quiet            Quiet mode - only displays warn and error messages
+     -v, --verbose      Verbose mode - will also output debug messages
+```
+### Build
+```bash
    USAGE
 
      cli.js build <source>
@@ -56,16 +78,7 @@ cli.js 0.5.0
      -o, --out <directory>      Set output directory                                optional      default: "./out"
      -n, --name <name>          Set output file name                                optional      default: "resume"
      -t, --theme <theme>        Set the theme you wish to use                       optional      default: "jsonresume-theme-flat"
-
-   GLOBAL OPTIONS
-
-     -h, --help         Display help
-     -V, --version      Display version
-     --no-color         Disable colors
-     --quiet            Quiet mode - only displays warn and error messages
-     -v, --verbose      Verbose mode - will also output debug messages
 ```
-### Build
 The default theme for the resume is the [flat-theme](https://github.com/erming/jsonresume-theme-flat) - same as resume-cli. You can use local themes or themes installed from NPM with the `-t, --theme` option flag. You can use the theme name `flat`, npm package name `jsonresume-theme-flat` or a local path `node_modules/jsonresume-theme-flat`.
 
 The theme must expose a __render__ method returning the the HTML markup in its entry-point file. The theme can expose a __renderAsync__ method returning a Promise resolving to HTML Markup. With this, the theme will be still compatible with the HackMyResume and resume-cli tools.
@@ -73,6 +86,26 @@ The theme must expose a __render__ method returning the the HTML markup in its e
 Export to Docx is very basic and supports images as long they are encoded in Base64 and included within the HTML markup `<img src="data:image/gif;base64,R0lGOD ...` 
 
 My [mocha-responsive](https://github.com/karlitos/jsonresume-theme-mocha-responsive) theme supports __async rendering__ and inline __Base64 encoded__ profile pictures, give it a shot!
- 
+
+### Validate
+```bash
+   USAGE
+
+     cli.js validate <source>
+
+   ARGUMENTS
+
+     <source>      The path to the source JSON resume file to be validate.      required
+```
+
+Does some basic validation, printing either a success message or list of errors found by the validator.
+```bash
+--- Your resume contains errors ---
+
+#    Additional properties not allowed: level in #/languages/1
+
+#    Additional properties not allowed: years in #/languages/1
+```
+
 ## License
 MIT. Go crazy. See LICENSE.md for details.

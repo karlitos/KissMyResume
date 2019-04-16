@@ -12,7 +12,7 @@ const flatTheme = require('jsonresume-theme-flat');
 
 const { logInfo, logSuccess } = require('./log');
 const build = require('./build');
-const validate = require('./validate');
+const { validateResume } = require('./validate');
 
 const DEFAULT_OUTPUT_PATH = './out';
 const DEFAULT_RESUME_PATH = './resume';
@@ -152,16 +152,14 @@ program.command('new', 'Create a new resume in JSON Resume format.')
 		const format = options.format || 'all';
 		console.log(options, 'format',format);
 	});
+*/
 
-program.command('validate', 'Validate a resume\'s structure and syntax.')
+program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
 	.action((args, options) => {
 
 		const sourcePath = path.resolve(process.cwd(), args.source );
-
-		const result =  validate.isValidFreshResume(sourcePath);
-		console.log('Is valid', result);
+		validateResume(sourcePath);
 	});
-*/
 
 program.parse(process.argv);
