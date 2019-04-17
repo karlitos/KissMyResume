@@ -1,9 +1,15 @@
 {
   "author": {
-    "name": "Karel Macha"
+    "name": "Karel Mácha",
+    "email": "karel.macha@karlitos.net",
+    "url": "http://karlitos.net/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/karlitos/KissMyResume"
   },
   "name": "kiss-my-resumes",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "KissMyResume is a Swiss Army knife for resumes and CVs build with the KISS principle in mind.",
   "bundleDependencies": false,
   "dependencies": {
