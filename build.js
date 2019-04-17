@@ -40,6 +40,14 @@ const exportToYaml = (resumeJson, name, outputPath ) => {
 	});
 };
 
+// Export to Json
+const exportToJson = (resumeJson, name, outputPath ) => {
+	fs.writeFile(`${path.resolve(outputPath, name)}.json`, JSON.stringify(resumeJson), (err) => {
+		if (err) throw err;
+		logSuccess('The Resume in JSON format has been saved!');
+	});
+};
+
 // Export to PDF or PNG
 const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng = true) => {
 	// Do not proceed if no output will be generated
@@ -181,13 +189,20 @@ module.exports = {
 			logError(`Export to PNG failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToYaml: (source, name, outputPath, theme) => {
+	exportResumeToYaml: (source, name, outputPath) => {
 		try {
 			exportToYaml(parseResumeFromSource(source).resume, name, outputPath);
 		} catch (err) {
 			logError(`Export to YAML failed! Reason: ${err}`)
 		}
 	 },
+	exportResumeToJson: (source, name, outputPath) => {
+		try {
+			exportToJson(parseResumeFromSource(source, false).resume, name, outputPath);
+		} catch (err) {
+			logError(`Export to JSON failed! Reason: ${err}`)
+		}
+	},
 	exportResumeToDocx: async (source, name, outputPath, theme) => {
 		try {
 			exportToDocx(await createMarkupFromSource(source, theme), name, outputPath);

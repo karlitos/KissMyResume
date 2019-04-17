@@ -144,20 +144,29 @@ program.version(version, '-v, --version')
 		}
 	});
 
-/*
+
 program.command('new', 'Create a new resume in JSON Resume format.')
 	.argument('<name>', 'The name for the new resume file.')
 	.option('-o, --out <directory>', 'Set output directory', resumeOutOptionValidator, DEFAULT_RESUME_PATH)
 	.action((args, options) => {
 
-		const format = options.format || 'all';
-		console.log(options, 'format',format);
+		logInfo(`+++ KissMyResume v${version} +++`);
+
+		const destinationPath = path.resolve(process.cwd(), options.out );
+		const newResumeName = path.basename(args.name, '.json');
+
+		logInfo(`Creating new empty resume ${path.resolve(destinationPath, `${newResumeName}.json`)}`);
+
+		build.exportResumeToJson(path.resolve(__dirname	,'resume/empty-json-resume.json'), newResumeName, destinationPath);
 	});
-*/
+
 
 program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
 	.action((args, options) => {
+
+		logInfo(`+++ KissMyResume v${version} +++`);
+
 		try {
 			const sourcePath = path.resolve(process.cwd(), args.source );
 			const {resume, type} = parseResumeFromSource(sourcePath);

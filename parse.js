@@ -4,9 +4,9 @@ const { logInfo, logSuccess } = require('./log');
 const { getResumeType, RESUME_TYPE_JSON, RESUME_TYPE_FRESH, RESUME_TYPE_UNKNOWN } = require('./validate');
 
 // Parse the source JSON file
-const parseResumeFromSource = (sourcePath) => {
+const parseResumeFromSource = (sourcePath, logging = true) => {
 	// do some logging
-	logInfo(`Parsing resume file from ${sourcePath}`);
+	if (logging) logInfo(`Parsing resume file from ${sourcePath}`);
 
 	try {
 		const resume = JSON.parse(fs.readFileSync(sourcePath));
@@ -14,10 +14,10 @@ const parseResumeFromSource = (sourcePath) => {
 		const type = getResumeType(resume);
 		switch (type) {
 			case RESUME_TYPE_JSON:
-				logSuccess('Succesfully parsed resume in JSON-Resume format.');
+				if (logging) logSuccess('Succesfully parsed resume in JSON-Resume format.');
 				break;
 		case RESUME_TYPE_FRESH:
-			logSuccess('Succesfully parsed resume in FRESH format.');
+			if (logging) logSuccess('Succesfully parsed resume in FRESH format.');
 			break;
 			case RESUME_TYPE_UNKNOWN:
 			default:

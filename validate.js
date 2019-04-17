@@ -3,11 +3,14 @@ const freshResumeSchema = require('./schemes/fresh-resume-schema_1.0.0-beta');
 const ZSchema = require('z-schema');
 const { logInfo, logSuccess, logError } = require('./log');
 
+// TODO: consider normalizing error messages from Z-Schema
+// https://github.com/dschenkelman/z-schema-errors
+
 const RESUME_TYPE_JSON = 'jrs';
 const RESUME_TYPE_FRESH = 'fresh';
 const RESUME_TYPE_UNKNOWN = 'unk';
 
-const validator = new ZSchema();
+const validator = new ZSchema({ breakOnFirstError: false	});
 
 const getResumeType = (resume) => {
 	if (resume.meta && resume.meta.format) { //&& resume.meta.format.substr(0, 5).toUpperCase() == 'FRESH'
@@ -51,18 +54,13 @@ module.exports = {
 	RESUME_TYPE_FRESH,
 	RESUME_TYPE_UNKNOWN,
 	getResumeType,
-	validateResume: (source) => {
-		try {
-			const parsedResume = require('./parse').parseResumeFromSource(source);
-			if (parsedResume.type === RESUME_TYPE_JSON) {
-				validateJsonResume(parsedResume.resume);
-			} else if (parsedResume.type === RESUME_TYPE_FRESH) {
-				validateFreshResume(parsedResume.resume)
+	validateResume: (resume, type) => {
+			if (type === RESUME_TYPE_JSON) {
+				validateJsonResume(resume);
+			} else if (type === RESUME_TYPE_FRESH) {
+				validateFreshResume(resume)
 			} else {
 				throw new Error('Unsupported resume type!')
 			}
-		} catch(err) {
-			logError(`Resume validation failed! Reason: ${err}`)
-		}
 	},
 };

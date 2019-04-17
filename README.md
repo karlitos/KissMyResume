@@ -24,15 +24,16 @@ To provide best support for the [broad variety of 3rd party themes](https://www.
 * [x] Export to YAML with the [json2yaml](https://git.coolaj86.com/coolaj86/json2yaml.js) utility
 * [x] Export to all formats at once
 * [x] Resume validation (JSON-Resume, FRESH)
+* [x] Empty resume initialization
 
 ### To do
 
 * [ ] Resume conversion  (JSON-Resume ⟷ FRESH)
 * [ ] Support for FRESH resumes through conversion
-* [ ] Empty resume initialization (_init_)
 * [ ] Resume HTML live preview (_serve_)
 * [ ] Resume analysis
 * [ ] Resume editor (live preview + [Json editor](https://github.com/josdejong/jsoneditor))
+* [ ] Normalizing validation error messages [(z-schema-errors)](https://github.com/dschenkelman/z-schema-errors)
 * [ ] ...
 
 ## Getting Started
@@ -86,6 +87,23 @@ The theme must expose a __render__ method returning the the HTML markup in its e
 Export to Docx is very basic and supports images as long they are encoded in Base64 and included within the HTML markup `<img src="data:image/gif;base64,R0lGOD ...` 
 
 My [mocha-responsive](https://github.com/karlitos/jsonresume-theme-mocha-responsive) theme supports __async rendering__ and inline __Base64 encoded__ profile pictures, give it a shot!
+
+### New
+
+```bash
+USAGE
+
+     kissmyresume new <name>
+
+   ARGUMENTS
+
+     <name>      The name for the new resume file.      required
+
+   OPTIONS
+
+     -o, --out <directory>      Set output directory      optional      default: "./resume"
+```
+Creates new empty Json-resume with a given name.
 
 ### Validate
 ```bash
