@@ -40,12 +40,24 @@ To provide best support for the [broad variety of 3rd party themes](https://www.
 
 ## Getting Started
 
-~~Install from the NPM~~ once published
+Install globally from the NPM
+
+```bash
+npm install -g kiss-my-resume
+```
+
+You can also install locally and use the `npm link` command to create the _kissmyresume_ command
+
+```bash
+npm install kiss-my-resume
+
+npm link
+```
 
 ## Usage
 
 ```bash
-cli.js 0.6.0
+kissmyresume 0.7.1
 
    USAGE
 

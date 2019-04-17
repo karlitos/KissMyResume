@@ -14,8 +14,10 @@ const { logSuccess, logError } = require('./log');
 // Add `finally()` to `Promise.prototype`
 promiseFinally.shim();
 
+// Used for PNG output
 const CHROME_PAGE_VIEWPORT = {width: 1280, height: 960};
 
+// Which formats are supported
 const SUPPORTED_FORMATS = {
 	'html': true,
 	'pdf': true,
@@ -24,7 +26,12 @@ const SUPPORTED_FORMATS = {
 	'png': true,
 };
 
-// Export to HTML
+/**
+ * Exports a HTML markup as HTML file
+ * @param markup {string} The HTML Markup containing the rendered resume
+ * @param name {string} Name for the output file(s)
+ * @param outputPath {string} Path where the output file will be stored
+ */
 const exportToHtml = (markup, name, outputPath) => {
 	fs.writeFile(`${path.resolve(outputPath, name)}.html`, markup, (err) => {
 		if (err) throw err;
@@ -32,7 +39,12 @@ const exportToHtml = (markup, name, outputPath) => {
 	});
 };
 
-// Export to YAML
+/**
+ * Exports a parsed resume in YAML format.
+ * @param resumeJson {Object} The Object containing the parsed resume
+ * @param name {string} Name for the output file
+ * @param outputPath {string} Path where the output file will be stored
+ */
 const exportToYaml = (resumeJson, name, outputPath ) => {
 	fs.writeFile(`${path.resolve(outputPath, name)}.yaml`, YAML.stringify(resumeJson), (err) => {
 		if (err) throw err;
@@ -40,7 +52,12 @@ const exportToYaml = (resumeJson, name, outputPath ) => {
 	});
 };
 
-// Export to Json
+/**
+ * Exports a parsed resume in JSON format. Used for creating new resume and conversion
+ * @param resumeJson {Object} The Object containing the parsed resume
+ * @param name {string} Name for the output file
+ * @param outputPath {string} Path where the output file will be stored
+ */
 const exportToJson = (resumeJson, name, outputPath ) => {
 	fs.writeFile(`${path.resolve(outputPath, name)}.json`, JSON.stringify(resumeJson), (err) => {
 		if (err) throw err;
@@ -48,7 +65,14 @@ const exportToJson = (resumeJson, name, outputPath ) => {
 	});
 };
 
-// Export to PDF or PNG
+/**
+ * Exports a HTML markup as PDF document or as a PNG image
+ * @param markup {string} The HTML Markup containing the rendered resume
+ * @param name {string} Name for the output file(s)
+ * @param outputPath {string} Path where the output file will be stored
+ * @param toPdf {boolean} Whether or not export to PDF
+ * * @param toPng {boolean} Whether or not export to PNG
+ */
 const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng = true) => {
 	// Do not proceed if no output will be generated
 	if (!toPdf && !toPng) { return; }
@@ -93,7 +117,12 @@ const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng =
 	}
 };
 
-// Export to Docx
+/**
+ * Exports a HTML markup as Word document in DocX format
+ * @param markup {string} The HTML Markup containing the rendered resume
+ * @param name {string} Name for the output file(s)
+ * @param outputPath {string} Path where the output file will be stored
+ */
 const exportToDocx = (markup, name, outputPath) => {
 	/**
 	 * It is possible to define additional options. See https://www.npmjs.com/package/html-docx-js#usage-and-demo
@@ -118,7 +147,14 @@ const exportToDocx = (markup, name, outputPath) => {
 	});
 };
 
-// Export to all supported formats
+/**
+ * Wrapper for efficient export to all supported formats
+ * @param source {string} Source path to the resume to be parsed
+ * @param name {string} Name for the output file(s)
+ * @param outputPath {string} Path where the output files will be stored
+ * @param theme {Object} The theme object with exposed render method
+ * @param outputFormats {Array<string>} Array containing the formats which shall be used for export
+ */
 const exportToMultipleFormats = async (source, name, outputPath, theme, outputFormats = []) => {
 	try {
 		const formatsToExport = outputFormats.reduce((acc, currentVal) => {
@@ -133,7 +169,8 @@ const exportToMultipleFormats = async (source, name, outputPath, theme, outputFo
 
 		const resumeJson = parseResumeFromSource(source).resume;
 
-		const markup = theme.renderAsync ? await theme.renderAsync(resumeJson) : theme.render(resumeJson);
+		// Prefer async rendering
+		const markup = theme.renderAsync ? await theme.renderAsync(resumeJson) : await theme.render(resumeJson);
 
 		// html export
 		if (formatsToExport.html) {
@@ -156,11 +193,18 @@ const exportToMultipleFormats = async (source, name, outputPath, theme, outputFo
 	}
 };
 
-// Common steps for most export functions
+/**
+ * Wrapper for common steps for most export methods: parse resume and use its output to create the HTML markup. Calls
+ * the renderAsync method or render when no async provided
+ * @param source {string} Source path to the resume to be parsed
+ * @param theme {Object} The theme object with exposed render method
+ * @returns {Promise<String>} Promise resolving to HTML markup as a string
+ */
 const createMarkupFromSource = async (source, theme) => {
 	try {
 		const resumeJson = parseResumeFromSource(source).resume;
-		return theme.renderAsync ? await theme.renderAsync(resumeJson) : theme.render(resumeJson);
+		// Prefer async rendering
+		return theme.renderAsync ? await theme.renderAsync(resumeJson) : await theme.render(resumeJson);
 	} catch(err) {
 		throw err;
 	}

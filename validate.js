@@ -6,12 +6,19 @@ const { logInfo, logSuccess, logError } = require('./log');
 // TODO: consider normalizing error messages from Z-Schema
 // https://github.com/dschenkelman/z-schema-errors
 
+// Constants identifying the different resume types
 const RESUME_TYPE_JSON = 'jrs';
 const RESUME_TYPE_FRESH = 'fresh';
 const RESUME_TYPE_UNKNOWN = 'unk';
 
-const validator = new ZSchema({ breakOnFirstError: false	});
+// Instantiate new Z-schema validator
+const validator = new ZSchema({ breakOnFirstError: false });
 
+/**
+ * Method determining the type of parsed resume
+ * @param resume {Object} The parsed resume
+ * @returns {(RESUME_TYPE_JSON|RESUME_TYPE_FRESH|RESUME_TYPE_UNKNOWN)} The type of the resume
+ */
 const getResumeType = (resume) => {
 	if (resume.meta && resume.meta.format) { //&& resume.meta.format.substr(0, 5).toUpperCase() == 'FRESH'
 		return RESUME_TYPE_FRESH;
@@ -22,6 +29,11 @@ const getResumeType = (resume) => {
 	}
 };
 
+/**
+ * Validates resume in Json-resume format. Logs an success message in case of a valid resume or a list of validation
+ * errors otherwise
+ * @param resume {Object} The parsed resume
+ */
 const validateJsonResume = (resume) => {
 	const valid = validator.validate(resume, jsonResumeSchema);
 	if (!valid) {
@@ -35,7 +47,11 @@ const validateJsonResume = (resume) => {
 
 };
 
-
+/**
+ * Validates resume in FRESH format. Logs an success message in case of a valid resume or a list of validation
+ * errors otherwise
+ * @param resume {Object} The parsed resume
+ */
 const validateFreshResume = (resume) => {
 	const valid = validator.validate(resume, freshResumeSchema);
 	if (!valid) {

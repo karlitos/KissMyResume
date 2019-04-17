@@ -27,6 +27,11 @@ const SUPPORTED_FORMATS = {
 	'png': true,
 };
 
+/**
+ * Validator method for the format option flag
+ * @param opt {string} The format option flag value
+ * @returns {string} The processed format option flag value
+ */
 const formatOptionValidator = (opt) => {
 
 	const allowedFormats = Object.entries(SUPPORTED_FORMATS).map(([format, allowed]) => {
@@ -45,6 +50,12 @@ const formatOptionValidator = (opt) => {
 	return option;
 };
 
+/**
+ * Validator method for the out option flag
+ * @param opt {string} The out option flag value
+ * @param defaultPath {string} The default path to which no provided path will resolve
+ * @returns {string} The processed out option flag value
+ */
 const outOptionValidator = (opt, defaultPath = DEFAULT_OUTPUT_PATH) => {
 
 	const dir = path.resolve(process.cwd(), opt === true ? defaultPath : opt);
@@ -67,12 +78,23 @@ const outOptionValidator = (opt, defaultPath = DEFAULT_OUTPUT_PATH) => {
 	return dir
 };
 
+/**
+ * Validator method for the name option flag
+ * @param opt {string} The name option flag value
+ * @returns {string} The processed name option flag value
+ */
 const nameOptionValidator = (opt) => {
 	return opt === true ? DEFAULT_NAME : opt;
 };
 
+/**
+ * Validator method for the theme option flag. Different provided values will be supported: short theme name (flat),
+ * full theme name (jsonresume-theme-flat) or path to a local theme.
+ * @param opt {string} The theme option flag value
+ * @returns {Object} The selected theme
+ */
 const themeOptionValidator = (opt) => {
-
+	// the default theme is flatTheme
 	if (opt === true ) return flatTheme;
 
 	let theme;
@@ -101,15 +123,22 @@ const themeOptionValidator = (opt) => {
 	}
 };
 
+/**
+ * Validator method for the out option flag when creating a new resume
+ * @param opt {string} The out option flag value
+ * @returns {string} The processed out option flag value
+ */
 const resumeOutOptionValidator = (opt) => {
 	return outOptionValidator(opt, DEFAULT_RESUME_PATH)
 };
 
 // Get the version from package.json
 const version = require('./package.json').version;
+// Provide it in the CLI
+program.version(version, '-v, --version');
 
-program.version(version, '-v, --version')
-	.command('build', 'Build your resume to the destination format(s).')
+// CLI setting for the build command
+program.command('build', 'Build your resume to the destination format(s).')
 	.argument('<source>', 'The path to the source JSON resume file.')
 	.option('-f, --format <format>', 'Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)', formatOptionValidator, 'all')
 	.option('-o, --out <directory>', 'Set output directory', outOptionValidator, DEFAULT_OUTPUT_PATH)
@@ -144,7 +173,7 @@ program.version(version, '-v, --version')
 		}
 	});
 
-
+// CLI setting for the new command
 program.command('new', 'Create a new resume in JSON Resume format.')
 	.argument('<name>', 'The name for the new resume file.')
 	.option('-o, --out <directory>', 'Set output directory', resumeOutOptionValidator, DEFAULT_RESUME_PATH)
@@ -160,7 +189,7 @@ program.command('new', 'Create a new resume in JSON Resume format.')
 		build.exportResumeToJson(path.resolve(__dirname	,'resume/empty-json-resume.json'), newResumeName, destinationPath);
 	});
 
-
+// CLI setting for the validate command
 program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
 	.action((args, options) => {
@@ -177,4 +206,5 @@ program.command('validate', 'Validate structure and syntax of your resume.')
 
 	});
 
+// Run KissMyResume by parsing the input arguments
 program.parse(process.argv);
