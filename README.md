@@ -2,6 +2,8 @@
 
 _[HackMyResume](https://github.com/hacksalot/HackMyResume) but [Keep it simple, (stupid)](https://en.wikipedia.org/wiki/KISS_principle)_. I really liked the original HackMyResume tool, but it lacked some important features, did not always provide the best results and I found the code base rather complicated. So I created my own version, strongly inspired by the HackMyResume project and the [resume-cli](https://github.com/jsonresume/resume-cli), but tried to __keep it simple__ by relying on off-the-shelf tools and libraries.
 
+![Screencast](./screencast.gif)
+
 The project is still WIP and in very early stage. It targets following shortcomings of the __HackMyResume__ [1] and __resume-cli__ [2] tools:
 * missing support for asynchronous template rendering (1,2)
 * PDF export relying on 3rd party tools (1)
