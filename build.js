@@ -71,7 +71,7 @@ const exportToJson = (resumeJson, name, outputPath ) => {
  * @param name {string} Name for the output file(s)
  * @param outputPath {string} Path where the output file will be stored
  * @param toPdf {boolean} Whether or not export to PDF
- * * @param toPng {boolean} Whether or not export to PNG
+ * @param toPng {boolean} Whether or not export to PNG
  */
 const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng = true) => {
 	// Do not proceed if no output will be generated
@@ -149,13 +149,13 @@ const exportToDocx = (markup, name, outputPath) => {
 
 /**
  * Wrapper for efficient export to all supported formats
- * @param source {string} Source path to the resume to be parsed
+ * @param sourcePath {string} Source path to the resume to be parsed
  * @param name {string} Name for the output file(s)
  * @param outputPath {string} Path where the output files will be stored
  * @param theme {Object} The theme object with exposed render method
  * @param outputFormats {Array<string>} Array containing the formats which shall be used for export
  */
-const exportToMultipleFormats = async (source, name, outputPath, theme, outputFormats = []) => {
+const exportToMultipleFormats = async (sourcePath, name, outputPath, theme, outputFormats = []) => {
 	try {
 		const formatsToExport = outputFormats.reduce((acc, currentVal) => {
 			if (SUPPORTED_FORMATS[currentVal]) {
@@ -167,7 +167,7 @@ const exportToMultipleFormats = async (source, name, outputPath, theme, outputFo
 		// Do not bother rendering when no export will be done
 		if (Object.keys(formatsToExport).length < 1) { return }
 
-		const resumeJson = parseResumeFromSource(source).resume;
+		const resumeJson = parseResumeFromSource(sourcePath).resume;
 
 		// Prefer async rendering
 		const markup = theme.renderAsync ? await theme.renderAsync(resumeJson) : await theme.render(resumeJson);
@@ -196,13 +196,14 @@ const exportToMultipleFormats = async (source, name, outputPath, theme, outputFo
 /**
  * Wrapper for common steps for most export methods: parse resume and use its output to create the HTML markup. Calls
  * the renderAsync method or render when no async provided
- * @param source {string} Source path to the resume to be parsed
+ * @param sourcePath {string} Source path to the resume to be parsed
  * @param theme {Object} The theme object with exposed render method
+ * @param logging {boolean} Whether the method should do any logging or not
  * @returns {Promise<String>} Promise resolving to HTML markup as a string
  */
-const createMarkupFromSource = async (source, theme) => {
+const createMarkupFromSource = async (sourcePath, theme, logging = true) => {
 	try {
-		const resumeJson = parseResumeFromSource(source).resume;
+		const resumeJson = parseResumeFromSource(sourcePath, logging).resume;
 		// Prefer async rendering
 		return theme.renderAsync ? await theme.renderAsync(resumeJson) : await theme.render(resumeJson);
 	} catch(err) {
@@ -212,47 +213,48 @@ const createMarkupFromSource = async (source, theme) => {
 };
 
 module.exports = {
-	exportResumeToHtml: async ( source, name, outputPath, theme ) => {
+	exportResumeToHtml: async ( sourcePath, name, outputPath, theme ) => {
     	try {
-			exportToHtml(await createMarkupFromSource(source, theme), name, outputPath);
+			exportToHtml(await createMarkupFromSource(sourcePath, theme), name, outputPath);
 		} catch (err) {
     		logError(`Export to HTML failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToPdf: async (source, name, outputPath, theme) => {
+	exportResumeToPdf: async (sourcePath, name, outputPath, theme) => {
 		try {
-			await exportToPdfAndPng(await createMarkupFromSource(source, theme), name, outputPath, true, false);
+			await exportToPdfAndPng(await createMarkupFromSource(sourcePath, theme), name, outputPath, true, false);
 		} catch(err) {
 			logError(`Export to PDF failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToPng: async (source, name, outputPath, theme) => {
+	exportResumeToPng: async (sourcePath, name, outputPath, theme) => {
 		try {
-			await exportToPdfAndPng(await createMarkupFromSource(source, theme), name, outputPath, false, true);
+			await exportToPdfAndPng(await createMarkupFromSource(sourcePath, theme), name, outputPath, false, true);
 		} catch(err) {
 			logError(`Export to PNG failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToYaml: (source, name, outputPath) => {
+	exportResumeToYaml: (sourcePath, name, outputPath) => {
 		try {
-			exportToYaml(parseResumeFromSource(source).resume, name, outputPath);
+			exportToYaml(parseResumeFromSource(sourcePath).resume, name, outputPath);
 		} catch (err) {
 			logError(`Export to YAML failed! Reason: ${err}`)
 		}
 	 },
-	exportResumeToJson: (source, name, outputPath) => {
+	exportResumeToJson: (sourcePath, name, outputPath) => {
 		try {
-			exportToJson(parseResumeFromSource(source, false).resume, name, outputPath);
+			exportToJson(parseResumeFromSource(sourcePath, false).resume, name, outputPath);
 		} catch (err) {
 			logError(`Export to JSON failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToDocx: async (source, name, outputPath, theme) => {
+	exportResumeToDocx: async (sourcePath, name, outputPath, theme) => {
 		try {
-			exportToDocx(await createMarkupFromSource(source, theme), name, outputPath);
+			exportToDocx(await createMarkupFromSource(sourcePath, theme), name, outputPath);
 		} catch (err) {
 			logError(`Export to DOCX failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToAllFormats: (source, name, outputPath, theme) => exportToMultipleFormats(source, name, outputPath, theme, ['html', 'pdf', 'yaml', 'docx']),
+	exportResumeToAllFormats: (sourcePath, name, outputPath, theme) => exportToMultipleFormats(sourcePath, name, outputPath, theme, ['html', 'pdf', 'yaml', 'docx']),
+	createMarkupFromSource,
 };

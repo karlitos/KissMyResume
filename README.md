@@ -27,12 +27,12 @@ To provide best support for the [broad variety of 3rd party themes](https://www.
 * [x] Export to all formats at once
 * [x] Resume validation (JSON-Resume, FRESH)
 * [x] Empty resume initialization
+* [x] Resume HTML live preview with hot-reload
 
 ### To do
 
 * [ ] Resume conversion  (JSON-Resume ⟷ FRESH)
 * [ ] Support for FRESH resumes through conversion
-* [ ] Resume HTML live preview (_serve_)
 * [ ] Resume analysis
 * [ ] Resume editor (live preview + [Json editor](https://github.com/josdejong/jsoneditor))
 * [ ] Normalizing validation error messages [(z-schema-errors)](https://github.com/dschenkelman/z-schema-errors)
@@ -56,17 +56,19 @@ npm link
 
 ## Usage
 
-```bash
-kissmyresume 0.7.1
+```bash 
+kissmyresume 0.8.0
 
    USAGE
 
-     cli.js <command> [options]
+     kissmyresume <command> [options]
 
    COMMANDS
 
      build <source>         Build your resume to the destination format(s).
+     new <name>             Create a new resume in JSON Resume format.
      validate <source>      Validate structure and syntax of your resume.
+     serve <source>         Show your resume in a browser with hot-reloading upon resume changes
      help <command>         Display help for a specific command
 
    GLOBAL OPTIONS
@@ -138,6 +140,24 @@ Does some basic validation, printing either a success message or list of errors 
 
 #    Additional properties not allowed: years in #/languages/1
 ```
+
+## Serve
+```bash
+USAGE
+
+     kissmyresume serve <source>
+
+   ARGUMENTS
+
+     <source>      The path to the source JSON resume file to be served.      required
+
+   OPTIONS
+
+     -t, --theme <theme>      Set the theme you wish to use                        optional      default: "jsonresume-theme-flat"
+     -p, --port <theme>       Set the port the webserver will be listening on      optional      default: 3000
+```
+
+Renders the resume to HTML with the selected theme, starts web server at the selected port, opens the rendered HTML in the default browser and watches the resume source for changes. Are changes detected, the resume will re-rendered and the page will be automatically reloaded. 
 
 ## License
 MIT. Go crazy. See LICENSE.md for details.

@@ -10,10 +10,12 @@ const program = require('caporal');
 
 const flatTheme = require('jsonresume-theme-flat');
 
-const { logInfo, logSuccess } = require('./log');
+const { logInfo, logSuccess, logError } = require('./log');
 const build = require('./build');
 const { parseResumeFromSource } = require('./parse');
 const { validateResume } = require('./validate');
+
+const { DEFAULT_PORT, serveResume, stopServingResume } = require('./serve');
 
 const DEFAULT_OUTPUT_PATH = './out';
 const DEFAULT_RESUME_PATH = './resume';
@@ -26,6 +28,8 @@ const SUPPORTED_FORMATS = {
 	'docx': true,
 	'png': true,
 };
+
+
 
 /**
  * Validator method for the format option flag
@@ -132,12 +136,26 @@ const resumeOutOptionValidator = (opt) => {
 	return outOptionValidator(opt, DEFAULT_RESUME_PATH)
 };
 
+/**
+ * Validator method for the port option flag when serving a resume with a web server
+ * @param opt {string} The port option flag value
+ * @returns {port} The processed out option flag value
+ */
+const serverPortOptionValidator = (opt) => {
+	const portNr = parseInt(opt);
+	if (!(Number.isInteger(portNr) && portNr >= 0 && portNr <= 65535)) {
+		throw new Error(`The provided value ${opt} is not valid port number!`);
+	}
+	return portNr;
+};
+
+
 // Get the version from package.json
 const version = require('./package.json').version;
 // Provide it in the CLI
 program.version(version, '-v, --version');
 
-// CLI setting for the build command
+// CLI setting for the "build" command
 program.command('build', 'Build your resume to the destination format(s).')
 	.argument('<source>', 'The path to the source JSON resume file.')
 	.option('-f, --format <format>', 'Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)', formatOptionValidator, 'all')
@@ -173,7 +191,7 @@ program.command('build', 'Build your resume to the destination format(s).')
 		}
 	});
 
-// CLI setting for the new command
+// CLI setting for the "new" command
 program.command('new', 'Create a new resume in JSON Resume format.')
 	.argument('<name>', 'The name for the new resume file.')
 	.option('-o, --out <directory>', 'Set output directory', resumeOutOptionValidator, DEFAULT_RESUME_PATH)
@@ -189,7 +207,7 @@ program.command('new', 'Create a new resume in JSON Resume format.')
 		build.exportResumeToJson(path.resolve(__dirname	,'resume/empty-json-resume.json'), newResumeName, destinationPath);
 	});
 
-// CLI setting for the validate command
+// CLI setting for the "validate" command
 program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
 	.action((args, options) => {
@@ -202,6 +220,33 @@ program.command('validate', 'Validate structure and syntax of your resume.')
 			validateResume(resume, type);
 		} catch(err) {
 			logError(`Resume validation failed! Reason: ${err}`)
+		}
+
+	});
+
+// CLI setting for the "serve" command
+program.command('serve', 'Show your resume in a browser with hot-reloading upon resume changes')
+	.argument('<source>', 'The path to the source JSON resume file to be served.')
+	.option('-t, --theme <theme>', 'Set the theme you wish to use', themeOptionValidator, DEFAULT_THEME)
+	.option('-p, --port <theme>', 'Set the port the webserver will be listening on', serverPortOptionValidator, DEFAULT_PORT)
+	.action(async (args, options) => {
+
+		logInfo(`+++ KissMyResume v${version} +++`);
+
+		try {
+			const sourcePath = path.resolve(process.cwd(), args.source );
+			await serveResume(sourcePath, options.theme, options.port);
+
+			process.on('SIGINT', () => {
+				logInfo( "Gracefully shutting down from Ctrl-C (SIGINT)" );
+				stopServingResume().then((message) => {
+					logSuccess(message);
+					process.exit(1);
+				})
+			});
+		} catch(err) {
+			logError(`Resume serving failed! Reason: ${err}`);
+			process.exit(0);
 		}
 
 	});

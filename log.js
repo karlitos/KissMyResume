@@ -20,8 +20,15 @@ const logSuccess = (text) => log(chalk.green(`\n${text}`));
  */
 const logError = (text) => error(chalk.red(`\n${text}`));
 
+/**
+ * Chalk wrapper for console server output
+ * @param text {String} The text to be logged
+ */
+const logServer = (text) => error(chalk.blue(`\n${text}`));
+
 module.exports = {
 	logInfo,
 	logSuccess,
 	logError,
+	logServer,
 };
