@@ -141,7 +141,7 @@ Does some basic validation, printing either a success message or list of errors 
 #    Additional properties not allowed: years in #/languages/1
 ```
 
-## Serve
+### Serve
 ```bash
 USAGE
 
