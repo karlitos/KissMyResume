@@ -16,6 +16,7 @@ const POLLING_RATE = 2000;
  * server The server instance created with the express framework.
  */
 let server;
+let markup;
 
 const { logInfo, logSuccess, logServer } = require('./log');
 const { createMarkupFromSource } = require('./build');
@@ -24,13 +25,19 @@ const app = express();
 
 const serveResume = async (sourcePath, theme, port = DEFAULT_PORT) => {
 	try {
+		// Try to generate the markup in the first place to see whether to continue
+		markup = await createMarkupFromSource(sourcePath, theme, false);
 		// Set up the port
 		app.set('port', port);
 		// Set up the main path
 		app.get('/', async (req, res) => {
-			const markup = await createMarkupFromSource(sourcePath, theme, false);
+			// Do not create the markup when it already exist (for whatever reason)
+			// TODO: improve (fix) error handling when createMarkupFromSource throws an error
+			if (!markup) markup = await createMarkupFromSource(sourcePath, theme, false);
 			// Add the script tag with the replace javascript link to the end of the Html body to enable hot-reloading
 			res.send(markup.replace(/(<\/body>)/i, '<script src="/reload/reload.js"></script>\n</body>'));
+			// Get sure the markup will be created next time
+			markup = null;
 		});
 
 		const reloadServer = await reload(app);
@@ -66,6 +73,7 @@ const stopServingResume = () => {
 		}
 		// stop the server
 		server.close(() => {
+			// TODO: Server close is not sufficient - see https://stackoverflow.com/questions/14626636/how-do-i-shutdown-a-node-js-https-server-immediately
 			resolve('The server serving the resume stopped successfully!');
 		});
 	});
