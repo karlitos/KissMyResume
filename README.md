@@ -31,11 +31,15 @@ To provide best support for the [broad variety of 3rd party themes](https://www.
 
 ### To do
 
+* [ ] Spellchecking [node-spellchecker](https://github.com/atom/node-spellchecker)
+* [ ] Proof-Reading of the result [Proofreader](https://github.com/kdzwinel/Proofreader)
 * [ ] Resume conversion  (JSON-Resume ⟷ FRESH)
 * [ ] Support for FRESH resumes through conversion
+* [ ] Resume forms (Electron App + live preview + [react-jsonschema-form](https://github.com/mozilla-services/react-jsonschema-form))
+* [ ] Resume editor (Electron App + live preview + [Json editor](https://github.com/josdejong/jsoneditor))
 * [ ] Resume analysis
-* [ ] Resume editor (live preview + [Json editor](https://github.com/josdejong/jsoneditor))
 * [ ] Normalizing validation error messages [(z-schema-errors)](https://github.com/dschenkelman/z-schema-errors)
+* [ ] Improve error handling and server life-cycle when serving the resume 
 * [ ] ...
 
 ## Getting Started
