@@ -73,7 +73,7 @@ const exportToJson = (resumeJson, name, outputPath ) => {
  * @param toPdf {boolean} Whether or not export to PDF
  * @param toPng {boolean} Whether or not export to PNG
  */
-const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng = true) => {
+const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng = true, size = 'A4') => {
 	// Do not proceed if no output will be generated
 	if (!toPdf && !toPng) { return; }
 
@@ -92,7 +92,7 @@ const exportToPdfAndPng = async (markup, name, outputPath, toPdf = true, toPng =
 			// Save as pdf
 			await page.pdf(
 				{
-					format: 'A4',
+					format: size,
 					path: `${path.resolve(outputPath, name)}.pdf`,
 					printBackground: true,
 				});
@@ -155,7 +155,7 @@ const exportToDocx = (markup, name, outputPath) => {
  * @param theme {Object} The theme object with exposed render method
  * @param outputFormats {Array<string>} Array containing the formats which shall be used for export
  */
-const exportToMultipleFormats = async (sourcePath, name, outputPath, theme, outputFormats = []) => {
+const exportToMultipleFormats = async (sourcePath, name, outputPath, theme, size, outputFormats = []) => {
 	try {
 		const formatsToExport = outputFormats.reduce((acc, currentVal) => {
 			if (SUPPORTED_FORMATS[currentVal]) {
@@ -177,7 +177,7 @@ const exportToMultipleFormats = async (sourcePath, name, outputPath, theme, outp
 			exportToHtml(markup, name, outputPath)
 		}
 		// pdf/png export
-		exportToPdfAndPng(markup, name, outputPath, formatsToExport.pdf, formatsToExport.png);
+		exportToPdfAndPng(markup, name,  outputPath, formatsToExport.pdf, formatsToExport.png, size);
 
 		// yaml export
 		if (formatsToExport.yaml) {
@@ -220,9 +220,9 @@ module.exports = {
     		logError(`Export to HTML failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToPdf: async (sourcePath, name, outputPath, theme) => {
+	exportResumeToPdf: async (sourcePath, name, outputPath, theme, size) => {
 		try {
-			await exportToPdfAndPng(await createMarkupFromSource(sourcePath, theme), name, outputPath, true, false);
+			await exportToPdfAndPng(await createMarkupFromSource(sourcePath, theme), name, outputPath, true, false, size);
 		} catch(err) {
 			logError(`Export to PDF failed! Reason: ${err}`)
 		}
@@ -255,6 +255,6 @@ module.exports = {
 			logError(`Export to DOCX failed! Reason: ${err}`)
 		}
 	},
-	exportResumeToAllFormats: (sourcePath, name, outputPath, theme) => exportToMultipleFormats(sourcePath, name, outputPath, theme, ['html', 'pdf', 'yaml', 'docx']),
+	exportResumeToAllFormats: (sourcePath, name, outputPath, theme, size) => exportToMultipleFormats(sourcePath, name, outputPath, theme, size, ['html', 'pdf', 'yaml', 'docx']),
 	createMarkupFromSource,
 };
