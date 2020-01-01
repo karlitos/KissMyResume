@@ -95,10 +95,11 @@ kissmyresume 0.8.0
 
    OPTIONS
 
-     -f, --format <format>      Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)      optional      default: "all"
-     -o, --out <directory>      Set output directory                                optional      default: "./out"
-     -n, --name <name>          Set output file name                                optional      default: "resume"
-     -t, --theme <theme>        Set the theme you wish to use                       optional      default: "jsonresume-theme-flat"
+     -f, --format <format>              Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)                                        optional      default: "all"                  
+     -p, --paper-size <paper-size>      Set output size for PDF files (A4|Letter|Legal|Tabloid|Ledger|A0|A1|A2|A3|A5|A6)      optional      default: "A4"                   
+     -o, --out <directory>              Set output directory                                                                  optional      default: "./out"                
+     -n, --name <name>                  Set output file name                                                                  optional      default: "resume"               
+     -t, --theme <theme>                Set the theme you wish to use                                                         optional      default: "jsonresume-theme-flat"
 ```
 The default theme for the resume is the [flat-theme](https://github.com/erming/jsonresume-theme-flat) - same as resume-cli. You can use local themes or themes installed from NPM with the `-t, --theme` option flag. You can use the theme name `flat`, npm package name `jsonresume-theme-flat` or a local path `node_modules/jsonresume-theme-flat`.
 
