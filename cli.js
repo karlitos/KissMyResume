@@ -28,7 +28,21 @@ const SUPPORTED_FORMATS = {
 	'docx': true,
 	'png': true,
 };
-
+// Paper sizes supported by Puppeteer
+// https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#pagepdfoptions
+const SUPPORTED_PAPER_SIZES = {
+	'Letter': true,
+	'Legal': true,
+	'Tabloid': true,
+	'Ledger': true,
+	'A0': true,
+	'A1': true,
+	'A2': true,
+	'A3': true,
+	'A4': true,
+	'A5': true,
+	'A6': true
+  };
 
 
 /**
@@ -50,6 +64,29 @@ const formatOptionValidator = (opt) => {
 
 	if (allowedFormats.includes(option) === false) {
 		throw new Error(`At the moment only following formats are supported: ${allowedFormats}`);
+	}
+	return option;
+};
+
+/**
+ * Validator method for the paper-size option flag
+ * @param opt {string} The paper-size option flag value
+ * @returns {string} The processed paper-size option flag value
+ */
+const paperSizeOptionValidator = (opt) => {
+
+	const allowedPaperSizes = Object.entries(SUPPORTED_PAPER_SIZES).map(([paperSize, allowed]) => {
+		if (allowed) return paperSize;
+	});
+
+	if (opt === true) {
+		throw new Error(`You have to choose one of these paper sizes: ${allowedPaperSizes}`);
+	}
+
+	const option = opt.charAt(0).toUpperCase() + opt.slice(1).toLowerCase()
+
+	if (allowedPaperSizes.includes(option) === false) {
+		throw new Error(`At the moment only following paper sizes are supported: ${allowedPaperSizes}`);
 	}
 	return option;
 };
@@ -159,6 +196,7 @@ program.version(version, '-v, --version');
 program.command('build', 'Build your resume to the destination format(s).')
 	.argument('<source>', 'The path to the source JSON resume file.')
 	.option('-f, --format <format>', 'Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)', formatOptionValidator, 'all')
+	.option('-p, --paper-size <paper-size>', 'Set output size for PDF files (A4|Letter|Legal|Tabloid|Ledger|A0|A1|A2|A3|A5|A6)', paperSizeOptionValidator, 'A4')
 	.option('-o, --out <directory>', 'Set output directory', outOptionValidator, DEFAULT_OUTPUT_PATH)
 	.option('-n, --name <name>', 'Set output file name', nameOptionValidator, DEFAULT_NAME)
 	.option('-t, --theme <theme>', 'Set the theme you wish to use', themeOptionValidator, DEFAULT_THEME)
@@ -171,13 +209,13 @@ program.command('build', 'Build your resume to the destination format(s).')
 
 		switch (options.format) {
 			case 'all':
-				build.exportResumeToAllFormats(sourcePath, options.name, options.out, options.theme);
+				build.exportResumeToAllFormats(sourcePath, options.name, options.out, options.theme, options.paperSize);
 				break;
 			case 'html':
 				build.exportResumeToHtml(sourcePath, options.name, options.out, options.theme);
 				break;
 			case 'pdf':
-				build.exportResumeToPdf(sourcePath, options.name, options.out, options.theme);
+				build.exportResumeToPdf(sourcePath, options.name, options.out, options.theme, options.paperSize);
 				break;
 			case 'png':
 				build.exportResumeToPng(sourcePath, options.name, options.out, options.theme);
