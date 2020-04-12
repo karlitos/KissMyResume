@@ -190,6 +190,7 @@ const exportToMultipleFormats = async (sourcePath, name, outputPath, theme, pape
 		}
 	} catch(err) {
 		logError(`Export to multiple formats failed! Reason: ${err}`);
+		console.error(err.stack)
 	}
 };
 
@@ -214,10 +215,11 @@ const createMarkupFromSource = async (sourcePath, theme, logging = true) => {
 
 module.exports = {
 	exportResumeToHtml: async ( sourcePath, name, outputPath, theme ) => {
-    	try {
+		try {
 			exportToHtml(await createMarkupFromSource(sourcePath, theme), name, outputPath);
 		} catch (err) {
-    		logError(`Export to HTML failed! Reason: ${err}`)
+			logError(`Export to HTML failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 	},
 	exportResumeToPdf: async (sourcePath, name, outputPath, theme, paperSize) => {
@@ -225,6 +227,7 @@ module.exports = {
 			await exportToPdfAndPng(await createMarkupFromSource(sourcePath, theme), name, outputPath, true, false, paperSize);
 		} catch(err) {
 			logError(`Export to PDF failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 	},
 	exportResumeToPng: async (sourcePath, name, outputPath, theme) => {
@@ -232,6 +235,7 @@ module.exports = {
 			await exportToPdfAndPng(await createMarkupFromSource(sourcePath, theme), name, outputPath, false, true);
 		} catch(err) {
 			logError(`Export to PNG failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 	},
 	exportResumeToYaml: (sourcePath, name, outputPath) => {
@@ -239,6 +243,7 @@ module.exports = {
 			exportToYaml(parseResumeFromSource(sourcePath).resume, name, outputPath);
 		} catch (err) {
 			logError(`Export to YAML failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 	 },
 	exportResumeToJson: (sourcePath, name, outputPath) => {
@@ -246,6 +251,7 @@ module.exports = {
 			exportToJson(parseResumeFromSource(sourcePath, false).resume, name, outputPath);
 		} catch (err) {
 			logError(`Export to JSON failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 	},
 	exportResumeToDocx: async (sourcePath, name, outputPath, theme) => {
@@ -253,6 +259,7 @@ module.exports = {
 			exportToDocx(await createMarkupFromSource(sourcePath, theme), name, outputPath);
 		} catch (err) {
 			logError(`Export to DOCX failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 	},
 	exportResumeToAllFormats: (sourcePath, name, outputPath, theme, paperSize) => exportToMultipleFormats(sourcePath, name, outputPath, theme, paperSize, ['html', 'pdf', 'yaml', 'docx']),

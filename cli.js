@@ -258,6 +258,7 @@ program.command('validate', 'Validate structure and syntax of your resume.')
 			validateResume(resume, type);
 		} catch(err) {
 			logError(`Resume validation failed! Reason: ${err}`)
+			console.error(err.stack)
 		}
 
 	});
@@ -284,6 +285,7 @@ program.command('serve', 'Show your resume in a browser with hot-reloading upon 
 			});
 		} catch(err) {
 			logError(`Resume serving failed! Reason: ${err}`);
+			console.error(err.stack)
 			process.exit(0);
 		}
 
