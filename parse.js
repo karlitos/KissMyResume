@@ -21,9 +21,9 @@ const parseResumeFromSource = (sourcePath, logging = true) => {
 			case RESUME_TYPE_JSON:
 				if (logging) logSuccess('Succesfully parsed resume in JSON-Resume format.');
 				break;
-		case RESUME_TYPE_FRESH:
-			if (logging) logSuccess('Succesfully parsed resume in FRESH format.');
-			break;
+			case RESUME_TYPE_FRESH:
+				if (logging) logSuccess('Succesfully parsed resume in FRESH format.');
+				break;
 			case RESUME_TYPE_UNKNOWN:
 			default:
 				throw new Error(`Invalid or unknown resume format detected!`);
