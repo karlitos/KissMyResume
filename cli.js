@@ -6,11 +6,11 @@
 
 const fs = require('fs');
 const path = require('path');
-const program = require('caporal');
+const { program } = require("@caporal/core");
 
 const flatTheme = require('jsonresume-theme-flat');
 
-const { logInfo, logSuccess, logError } = require('./log');
+const { logInfo, logSuccess, logError, setLogLevelToDebug } = require('./log');
 const build = require('./build');
 const { parseResumeFromSource } = require('./parse');
 const { validateResume } = require('./validate');
@@ -190,7 +190,7 @@ const serverPortOptionValidator = (opt) => {
 // Get the version from package.json
 const version = require('./package.json').version;
 // Provide it in the CLI
-program.version(version, '-v, --version');
+program.version(version);
 
 // CLI setting for the "build" command
 program.command('build', 'Build your resume to the destination format(s).')
@@ -200,10 +200,12 @@ program.command('build', 'Build your resume to the destination format(s).')
 	.option('-o, --out <directory>', 'Set output directory', outOptionValidator, DEFAULT_OUTPUT_PATH)
 	.option('-n, --name <name>', 'Set output file name', nameOptionValidator, DEFAULT_NAME)
 	.option('-t, --theme <theme>', 'Set the theme you wish to use', themeOptionValidator, DEFAULT_THEME)
-	.action((args, options) => {
+	.action(( {args, options, logger }) => {
 
 
 		logInfo(`+++ KissMyResume v${version} +++`);
+		// set log level to debug if global verbose parameter was set
+		if (logger.level === 'silly') { setLogLevelToDebug() }
 
 		const sourcePath = path.resolve(process.cwd(), args.source );
 
@@ -233,9 +235,11 @@ program.command('build', 'Build your resume to the destination format(s).')
 program.command('new', 'Create a new resume in JSON Resume format.')
 	.argument('<name>', 'The name for the new resume file.')
 	.option('-o, --out <directory>', 'Set output directory', resumeOutOptionValidator, DEFAULT_RESUME_PATH)
-	.action((args, options) => {
+	.action(({ args, options, logger }) => {
 
 		logInfo(`+++ KissMyResume v${version} +++`);
+		// set log level to debug if global verbose parameter was set
+		if (logger.level === 'silly') { setLogLevelToDebug() }
 
 		const destinationPath = path.resolve(process.cwd(), options.out );
 		const newResumeName = path.basename(args.name, '.json');
@@ -248,9 +252,13 @@ program.command('new', 'Create a new resume in JSON Resume format.')
 // CLI setting for the "validate" command
 program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
-	.action((args, options) => {
+	.action(({ args, options, logger }) => {
+
+		console.log(args, options, logger)
 
 		logInfo(`+++ KissMyResume v${version} +++`);
+		// set log level to debug if global verbose parameter was set
+		if (logger.level === 'silly') { setLogLevelToDebug() }
 
 		try {
 			const sourcePath = path.resolve(process.cwd(), args.source );
@@ -267,9 +275,11 @@ program.command('serve', 'Show your resume in a browser with hot-reloading upon 
 	.argument('<source>', 'The path to the source JSON resume file to be served.')
 	.option('-t, --theme <theme>', 'Set the theme you wish to use', themeOptionValidator, DEFAULT_THEME)
 	.option('-p, --port <theme>', 'Set the port the webserver will be listening on', serverPortOptionValidator, DEFAULT_PORT)
-	.action(async (args, options) => {
+	.action(async ({ args, options, logger }) => {
 
 		logInfo(`+++ KissMyResume v${version} +++`);
+		// set log level to debug if global verbose parameter was set
+		if (logger.level === 'silly') { setLogLevelToDebug() }
 
 		try {
 			const sourcePath = path.resolve(process.cwd(), args.source );
@@ -290,4 +300,4 @@ program.command('serve', 'Show your resume in a browser with hot-reloading upon 
 	});
 
 // Run KissMyResume by parsing the input arguments
-program.parse(process.argv);
+program.run(process.argv.slice(2));
