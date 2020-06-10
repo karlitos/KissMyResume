@@ -10,7 +10,7 @@ const { program } = require("@caporal/core");
 
 const flatTheme = require('jsonresume-theme-flat');
 
-const { logInfo, logSuccess, logError, setLogLevelToDebug } = require('./log');
+const { logInfo, logSuccess, logError, setLogLevelToDebug, getErrorCount } = require('./log');
 const build = require('./build');
 const { parseResumeFromSource } = require('./parse');
 const { validateResume } = require('./validate');
@@ -195,11 +195,11 @@ program.version(version);
 // CLI setting for the "build" command
 program.command('build', 'Build your resume to the destination format(s).')
 	.argument('<source>', 'The path to the source JSON resume file.')
-	.option('-f, --format <format>', 'Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)', formatOptionValidator, 'all')
-	.option('-p, --paper-size <paper-size>', 'Set output size for PDF files (A4|Letter|Legal|Tabloid|Ledger|A0|A1|A2|A3|A5|A6)', paperSizeOptionValidator, 'A4')
-	.option('-o, --out <directory>', 'Set output directory', outOptionValidator, DEFAULT_OUTPUT_PATH)
-	.option('-n, --name <name>', 'Set output file name', nameOptionValidator, DEFAULT_NAME)
-	.option('-t, --theme <theme>', 'Set the theme you wish to use', themeOptionValidator, DEFAULT_THEME)
+	.option('-f, --format <format>', 'Set output format (HTML|PDF|YAML|DOCX|PNG|ALL)', { validator: formatOptionValidator, default: 'all' })
+	.option('-p, --paper-size <paper-size>', 'Set output size for PDF files (A4|Letter|Legal|Tabloid|Ledger|A0|A1|A2|A3|A5|A6)', { validator: paperSizeOptionValidator, default: 'A4' })
+	.option('-o, --out <directory>', 'Set output directory', { validator: outOptionValidator, default: DEFAULT_OUTPUT_PATH })
+	.option('-n, --name <name>', 'Set output file name', { validator: nameOptionValidator, default: DEFAULT_NAME })
+	.option('-t, --theme <theme>', 'Set the theme you wish to use', { validator: themeOptionValidator, default: DEFAULT_THEME })
 	.action(( {args, options, logger }) => {
 
 
@@ -234,7 +234,7 @@ program.command('build', 'Build your resume to the destination format(s).')
 // CLI setting for the "new" command
 program.command('new', 'Create a new resume in JSON Resume format.')
 	.argument('<name>', 'The name for the new resume file.')
-	.option('-o, --out <directory>', 'Set output directory', resumeOutOptionValidator, DEFAULT_RESUME_PATH)
+	.option('-o, --out <directory>', 'Set output directory', { validator: resumeOutOptionValidator, default: DEFAULT_RESUME_PATH })
 	.action(({ args, options, logger }) => {
 
 		logInfo(`+++ KissMyResume v${version} +++`);
@@ -254,8 +254,6 @@ program.command('validate', 'Validate structure and syntax of your resume.')
 	.argument('<source>', 'The path to the source JSON resume file to be validate.')
 	.action(({ args, options, logger }) => {
 
-		console.log(args, options, logger)
-
 		logInfo(`+++ KissMyResume v${version} +++`);
 		// set log level to debug if global verbose parameter was set
 		if (logger.level === 'silly') { setLogLevelToDebug() }
@@ -273,8 +271,8 @@ program.command('validate', 'Validate structure and syntax of your resume.')
 // CLI setting for the "serve" command
 program.command('serve', 'Show your resume in a browser with hot-reloading upon resume changes')
 	.argument('<source>', 'The path to the source JSON resume file to be served.')
-	.option('-t, --theme <theme>', 'Set the theme you wish to use', themeOptionValidator, DEFAULT_THEME)
-	.option('-p, --port <theme>', 'Set the port the webserver will be listening on', serverPortOptionValidator, DEFAULT_PORT)
+	.option('-t, --theme <theme>', 'Set the theme you wish to use', { validator: themeOptionValidator, default: DEFAULT_THEME })
+	.option('-p, --port <theme>', 'Set the port the webserver will be listening on', { validator: serverPortOptionValidator, default: DEFAULT_PORT })
 	.action(async ({ args, options, logger }) => {
 
 		logInfo(`+++ KissMyResume v${version} +++`);
@@ -300,4 +298,11 @@ program.command('serve', 'Show your resume in a browser with hot-reloading upon 
 	});
 
 // Run KissMyResume by parsing the input arguments
-program.run(process.argv.slice(2));
+program.run(process.argv.slice(2))
+	   .then(() => {
+		   const errorCount = getErrorCount();
+		   if (errorCount > 0) {
+			   console.error(`KissMyResume finished with ${errorCount} error${errorCount > 1 ? 's' : ''}`);
+			   
+		   }
+	   });
