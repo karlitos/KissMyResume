@@ -96,4 +96,4 @@ typings/
 .webpack/
 
 # Electron-Forge
-resume out/
+out/

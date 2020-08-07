@@ -29,13 +29,21 @@ To provide best support for the [broad variety of 3rd party themes](https://www.
 * [x] Empty resume initialization
 * [x] Resume HTML live preview with hot-reload
 
+### Work In Progress
+* [x] Resume forms (Electron App + live preview + [react-jsonschema-form](https://github.com/mozilla-services/react-jsonschema-form))
+  * [x] Initial app built around react and react-jsonschema-form works
+  * [x] Created app Tested on MacOs
+  * [x] Allows to read json-resume data to the form
+  * [ ] Further integration with the CLI
+  * [ ] More mature GUI, improved styling
+  * [ ] Split-pane with live-preview
+
 ### To do
 
 * [ ] Spellchecking [node-spellchecker](https://github.com/atom/node-spellchecker)
 * [ ] Proof-Reading of the result [Proofreader](https://github.com/kdzwinel/Proofreader)
 * [ ] Resume conversion  (JSON-Resume ⟷ FRESH)
 * [ ] Support for FRESH resumes through conversion
-* [ ] Resume forms (Electron App + live preview + [react-jsonschema-form](https://github.com/mozilla-services/react-jsonschema-form))
 * [ ] Resume editor (Electron App + live preview + [Json editor](https://github.com/josdejong/jsoneditor))
 * [ ] Resume analysis
 * [ ] Normalizing validation error messages [(z-schema-errors)](https://github.com/dschenkelman/z-schema-errors)

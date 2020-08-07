@@ -10,7 +10,7 @@
   },
   "name": "kiss-my-resume",
   "productName": "kiss-my-resume",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "KissMyResume is a Swiss Army knife for resumes and CVs build with the KISS principle in mind.",
   "bundleDependencies": false,
   "config": {
