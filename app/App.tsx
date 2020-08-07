@@ -3,7 +3,7 @@ import 'bootstrap3/dist/css/bootstrap.min.css';
 import Form from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import Ajv from 'ajv';
-import JSON_RESUME_SCHEMA from './json-resume-schema_0.0.0.json'
+import JSON_RESUME_SCHEMA from '../schemes/json-resume-schema_0.0.0.json'
 import { VALID_INVOKE_CHANNELS, CvDataReturnVal } from './definitions'
 
 // read https://github.com/async-library/react-async
@@ -12,7 +12,7 @@ export default function App()
     const [schema , setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
     const [cvData, setCvData] = useState({});
     const log = (type: any) => console.log.bind(console, type);
-    const cvForm = useRef<HTMLFormElement>();
+    const cvForm = useRef<Form<{}>>(null);
 
     // const ajv = new Ajv();
     // const validate = ajv.compile(schema);
