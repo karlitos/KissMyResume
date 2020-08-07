@@ -9,12 +9,90 @@
     "url": "https://github.com/karlitos/KissMyResume"
   },
   "name": "kiss-my-resume",
+  "productName": "kiss-my-resume",
   "version": "0.8.2",
   "description": "KissMyResume is a Swiss Army knife for resumes and CVs build with the KISS principle in mind.",
   "bundleDependencies": false,
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "icon": "./app/assets/kiss-my-resume"
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "my_new_app"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "plugins": [
+        [
+          "@electron-forge/plugin-webpack",
+          {
+            "mainConfig": "./webpack.main.config.js",
+            "renderer": {
+              "config": "./webpack.renderer.config.js",
+              "entryPoints": [
+                {
+                  "html": "./app/index.html",
+                  "js": "./app/renderer.tsx",
+                  "name": "main_window",
+                  "preload": {
+                    "js": "./app/preload.ts"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "6.0.0-beta.52",
+    "@electron-forge/maker-deb": "6.0.0-beta.52",
+    "@electron-forge/maker-rpm": "6.0.0-beta.52",
+    "@electron-forge/maker-squirrel": "6.0.0-beta.52",
+    "@electron-forge/maker-zip": "6.0.0-beta.52",
+    "@electron-forge/plugin-webpack": "6.0.0-beta.52",
+    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "@types/webpack": "^4.41.21",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
+    "css-loader": "^3.0.0",
+    "electron": "9.1.2",
+    "eslint": "^6.8.0",
+    "eslint-plugin-import": "^2.20.0",
+    "file-loader": "^6.0.0",
+    "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "node-loader": "^0.6.0",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.0"
+  },
   "dependencies": {
     "@caporal/core": "^2.0.2",
+    "@rjsf/core": "^2.2.2",
+    "bootstrap3": "^3.3.5",
     "chalk": "^2.4.2",
+    "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
     "fresh-jrs-converter": "^1.0.0",
     "handlebars": "^4.7.6",
@@ -28,29 +106,41 @@
     "open": "^6.4.0",
     "promise.prototype.finally": "^3.1.2",
     "puppeteer": "^1.20.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "reload": "^3.1.0",
     "z-schema": "^4.2.3"
   },
   "deprecated": false,
-  "devDependencies": {},
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "keywords": [
     "json",
     "resume",
     "jsonresume",
     "json-resume",
+    "json-schema",
     "resume",
     "CV",
     "career",
-    "CLI"
+    "CLI",
+    "react",
+    "form",
+    "react.js",
+    "electron",
+    "cross-platform"
   ],
   "license": "MIT",
   "scripts": {
-    "run": "node lib/cli.js"
+    "cli": "node lib/cli.js",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint --ext .ts ."
   },
-  "main": "lib/cli.js",
+  "main": ".webpack/main",
   "bin": {
     "kissmyresume": "lib/cli.js"
   }
