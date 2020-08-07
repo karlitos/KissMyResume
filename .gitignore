@@ -6,7 +6,7 @@ resume.json
 .DS_Store
 .idea
 .vscode
-out/
+resume out/
 
 # Logs
 logs
@@ -96,4 +96,4 @@ typings/
 .webpack/
 
 # Electron-Forge
-out/
+resume out/
