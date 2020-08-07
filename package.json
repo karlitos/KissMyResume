@@ -13,7 +13,7 @@
   "description": "KissMyResume is a Swiss Army knife for resumes and CVs build with the KISS principle in mind.",
   "bundleDependencies": false,
   "dependencies": {
-    "@caporal/core": "^2.0.0-beta.2",
+    "@caporal/core": "^2.0.2",
     "chalk": "^2.4.2",
     "express": "^4.17.1",
     "fresh-jrs-converter": "^1.0.0",
@@ -28,7 +28,7 @@
     "open": "^6.4.0",
     "promise.prototype.finally": "^3.1.2",
     "puppeteer": "^1.20.0",
-    "reload": "^3.0.5",
+    "reload": "^3.1.0",
     "z-schema": "^4.2.3"
   },
   "deprecated": false,
@@ -48,10 +48,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "run": "node cli.js"
+    "run": "node lib/cli.js"
   },
-  "main": "cli.js",
+  "main": "lib/cli.js",
   "bin": {
-    "kissmyresume": "cli.js"
+    "kissmyresume": "lib/cli.js"
   }
 }
