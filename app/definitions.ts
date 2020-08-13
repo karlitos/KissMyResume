@@ -10,7 +10,12 @@ export enum VALID_INVOKE_CHANNELS {
     'open-cv' = 'open-cv'
 }
 
-export interface CvDataReturnVal {
+export interface ICvDataReturnVal {
     success: boolean;
     data: null | Record<string, any>;
+}
+
+export interface INotification {
+    type: 'success' | 'info' | 'warning' | 'danger';
+    text: string;
 }

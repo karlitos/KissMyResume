@@ -17,5 +17,8 @@
   },
   "include": [
     "app/**/*"
+  ],
+  "files": [
+    "declarations.d.ts"
   ]
 }

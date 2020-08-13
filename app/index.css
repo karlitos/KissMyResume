@@ -1,8 +1,16 @@
-/* https://getbootstrap.com/docs/4.0/getting-started/webpack/ */
-/* @import '../node_modules/bootstrap3/dist/css/bootstrap.min.css'; */
+@import './bootstrap-override.css';
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  margin: auto;
-  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  margin: auto !important;
+  padding: 2rem !important;
+}
+
+/* Some generic global classes/helpers */
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
 }

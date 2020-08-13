@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import * as fs from 'fs';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-import { VALID_INVOKE_CHANNELS, CvDataReturnVal } from './definitions';
+import { VALID_INVOKE_CHANNELS, ICvDataReturnVal } from './definitions';
 
 // Comment our to see security warnings!
 // Further reading https://github.com/electron/electron/issues/19775
@@ -56,7 +56,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], async (): Promise<CvDataReturnVal> => {
+ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], async (): Promise<ICvDataReturnVal> => {
   try {
     const openDialogReturnVal = await  dialog.showOpenDialog({
       title: 'Open your CV data in JSON format',

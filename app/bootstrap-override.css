@@ -1,0 +1,11 @@
+/* Globally overrides bootstrap classes */
+
+.alert-slim { /* Less margin and vertical padding */
+    margin: 5px;
+    padding: 5px 15px;
+}
+
+.row-no-gutter {
+    margin-right: 0;
+    margin-left: 0;
+}

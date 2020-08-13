@@ -6,6 +6,7 @@ resume.json
 .DS_Store
 .idea
 .vscode
+.npmrc
 resume out/
 
 # Logs

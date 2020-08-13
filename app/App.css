@@ -1,0 +1,6 @@
+.notification-area {
+    height: 3.5em;
+    overflow-y: auto;
+    border: 1px ridge #ccc;
+    border-radius: 4px;
+}
