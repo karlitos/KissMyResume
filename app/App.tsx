@@ -1,5 +1,5 @@
 import React,  { useState, useRef, Fragment } from 'react';
-import Form, {IChangeEvent} from '@rjsf/core';
+import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import JSON_RESUME_SCHEMA from '../schemes/json-resume-schema_0.0.0.json'
 import { VALID_INVOKE_CHANNELS, ICvDataReturnVal, INotification } from './definitions'
@@ -25,7 +25,7 @@ export default function App()
      * then manually validated against the current schema of the Form.
      */
     const handleOpenCvButtonClick = () => {
-        window.api.invoke(VALID_INVOKE_CHANNELS['open-cv'], {foo: 'bar'}).then((result: ICvDataReturnVal) => {
+        window.api.invoke(VALID_INVOKE_CHANNELS['open-cv']).then((result: ICvDataReturnVal) => {
             if (result.success) {
                 const { errorSchema, errors } = cvForm.current.validate(result.data, schema, [metaSchemaDraft04]);
                 if (errors && errors.length) {
@@ -57,9 +57,14 @@ export default function App()
     /**
      * The submit-event handler.
      */
-    const handleFormSubmit = (formData: Record<string, any>) => {
-        console.log('VALIDATION', formData)
-
+    const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
+        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData).then(
+            (markup: string) => {
+                console.log(markup)
+        }).catch((err: PromiseRejectionEvent) => {
+            // display a warning ...TBD
+            setNotifications([...notifications, {type: 'danger', text: `Processing of CV data failed: ${err}`}])
+        });
     };
 
     return <div className="container-fluid ">

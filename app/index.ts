@@ -2,6 +2,9 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import * as fs from 'fs';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 import { VALID_INVOKE_CHANNELS, ICvDataReturnVal } from './definitions';
+import { createMarkup } from '../lib/build';
+
+const flatTheme = require('jsonresume-theme-flat');
 
 // Comment our to see security warnings!
 // Further reading https://github.com/electron/electron/issues/19775
@@ -86,4 +89,8 @@ ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], async (): Promise<ICvDataReturn
   } catch (err) {
     return Promise.reject(`An error occurred when opening the CV data: ${err}`);
   }
+});
+
+ipcMain.handle(VALID_INVOKE_CHANNELS['process-cv'], async (evt, cvData: Record<string, any>) => {
+  return createMarkup(cvData, flatTheme);
 });

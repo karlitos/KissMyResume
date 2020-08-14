@@ -7,7 +7,9 @@ declare global {
 
 // The enum keys and values has to be same, otherwise the reverse lookup and the 'in' operator won't work
 export enum VALID_INVOKE_CHANNELS {
-    'open-cv' = 'open-cv'
+    'open-cv' = 'open-cv',
+    'process-cv' = 'process-cv',
+    'save-cv' = 'save-cv',
 }
 
 export interface ICvDataReturnVal {
