@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, BrowserView, ipcMain, dialog } from 'electron';
 import * as fs from 'fs';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 import { VALID_INVOKE_CHANNELS, ICvDataReturnVal } from './definitions';
@@ -24,15 +24,35 @@ const createWindow = () => {
       nodeIntegration: false, // is default value after Electron v5
       contextIsolation: true, // protect against prototype pollution
       enableRemoteModule: false, // turn off remote
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, // see https://www.electronforge.io/config/plugins/webpack#project-setup
     }
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  // mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
+
+  const form = new BrowserView({
+    webPreferences: {
+    nodeIntegration: false, // is default value after Electron v5
+    contextIsolation: true, // protect against prototype pollution
+    enableRemoteModule: false, // turn off remote
+    preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, // see https://www.electronforge.io/config/plugins/webpack#project-setup
+    }
+  });
+  mainWindow.addBrowserView(form);
+  form.setBounds({ x: 0, y: 0, width: 400, height: 600 });
+  form.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
+  form.webContents.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  // form.webContents.openDevTools();
+
+  const preview = new BrowserView();
+  mainWindow.addBrowserView(preview)
+  preview.setBounds({ x: 400, y: 0, width: 400, height: 600 });
+  preview.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
+  preview.webContents.loadURL('data:text/html;charset=utf-8,<body>Here be preview</body>');
+  // preview.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -74,7 +94,7 @@ ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], async (): Promise<ICvDataReturn
 
     if (openDialogReturnVal && !openDialogReturnVal.canceled) {
       //  built-in Promise implementations of the fs module
-      const cvData = await fs.promises.readFile(openDialogReturnVal.filePaths[0])
+      const cvData = await fs.promises.readFile(openDialogReturnVal.filePaths[0]);
       return {
         success: true,
         data: JSON.parse(cvData.toString()),
@@ -92,5 +112,9 @@ ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], async (): Promise<ICvDataReturn
 });
 
 ipcMain.handle(VALID_INVOKE_CHANNELS['process-cv'], async (evt, cvData: Record<string, any>) => {
-  return createMarkup(cvData, flatTheme);
+  const markup = await createMarkup(cvData, flatTheme);
+  // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
+  // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
+  BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
+  return Promise.resolve(markup);
 });
