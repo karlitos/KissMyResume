@@ -1,8 +1,9 @@
-import { app, BrowserWindow, BrowserView, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, BrowserView, ipcMain, dialog, net } from 'electron';
 import * as fs from 'fs';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-import { VALID_INVOKE_CHANNELS, ICvDataReturnVal } from './definitions';
-import { createMarkup } from '../lib/build';
+import { VALID_INVOKE_CHANNELS, ICvDataReturnVal } from '../definitions';
+import { PREVIEW_DEFAULT_MARKUP } from './preview'
+import { createMarkup } from '../../lib/build';
 
 const flatTheme = require('jsonresume-theme-flat');
 
@@ -44,15 +45,24 @@ const createWindow = () => {
   mainWindow.addBrowserView(form);
   form.setBounds({ x: 0, y: 0, width: 400, height: 600 });
   form.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
-  form.webContents.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  // form.webContents.openDevTools();
+  form.webContents.loadURL(MAIN_WINDOW_WEBPACK_ENTRY
+      /*,
+      {
+        postData: [{
+          type: 'rawData',
+          bytes: Buffer.from('hello=world')
+        }],
+      }
+      */
+  );￿
+ form.webContents.openDevTools({ mode: 'undocked' });
 
   const preview = new BrowserView();
   mainWindow.addBrowserView(preview)
   preview.setBounds({ x: 400, y: 0, width: 400, height: 600 });
   preview.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
-  preview.webContents.loadURL('data:text/html;charset=utf-8,<body>Here be preview</body>');
-  // preview.webContents.openDevTools();
+  preview.webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(PREVIEW_DEFAULT_MARKUP)}`);
+  // preview.webContents.openDevTools({ mode: 'undocked' });
 };
 
 // This method will be called when Electron has finished
@@ -115,6 +125,7 @@ ipcMain.handle(VALID_INVOKE_CHANNELS['process-cv'], async (evt, cvData: Record<s
   const markup = await createMarkup(cvData, flatTheme);
   // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
   // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
+  // alternatively https://github.com/remarkablemark/html-react-parser
   BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
   return Promise.resolve(markup);
 });

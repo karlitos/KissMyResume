@@ -50,7 +50,7 @@
               "entryPoints": [
                 {
                   "html": "./app/index.html",
-                  "js": "./app/renderer.tsx",
+                  "js": "./app/renderer/renderer.tsx",
                   "name": "main_window",
                   "preload": {
                     "js": "./app/preload.ts"
@@ -103,11 +103,12 @@
     "json2yaml": "^1.1.0",
     "jsonresume-theme-flat": "^0.3.7",
     "jsonresume-theme-mocha-responsive": "^1.0.0",
+    "ky": "^0.23.0",
     "lodash.merge": ">=4.6.2",
     "minimist": "^1.2.5",
     "open": "^6.4.0",
     "promise.prototype.finally": "^3.1.2",
-    "puppeteer": "^1.20.0",
+    "puppeteer": "^5.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reload": "^3.1.0",

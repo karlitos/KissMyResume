@@ -1,9 +1,10 @@
 import React,  { useState, useRef, Fragment } from 'react';
 import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
-import JSON_RESUME_SCHEMA from '../schemes/json-resume-schema_0.0.0.json'
-import { VALID_INVOKE_CHANNELS, ICvDataReturnVal, INotification } from './definitions'
+import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
+import { VALID_INVOKE_CHANNELS, ICvDataReturnVal, INotification } from '../../../definitions'
 import styles from './App.css'
+import { useThemeList } from "../../hooks/useThemeList";
 
 // read https://github.com/async-library/react-async
 export default function App()
@@ -14,6 +15,7 @@ export default function App()
     const [schema , setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
     const [cvData, setCvData] = useState({});
     const [notifications, setNotifications] = useState<Array<INotification>>([]);
+    const themeList = useThemeList();
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
 
@@ -50,7 +52,6 @@ export default function App()
      * Click-handler for the Save-cv-button which triggers the form-submit function programmatically.
      */
     const handleSaveCvButtonClick = () => {
-        console.log(cvData);
         cvForm.current.submit();
     };
 
@@ -84,6 +85,14 @@ export default function App()
                     <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>Open CV</button>
                     <button className='btn btn-primary' onClick={handleSaveCvButtonClick}>Process CV</button>
                 </div>
+                <select className="form-control">
+                    <option key='0' disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
+                    {
+                        themeList.map((theme, index) =>
+                            <option key={index+1}>{theme.name} - {theme.description}</option>
+                        )
+                    }
+                </select>
             </div>
         </div>
 		<Form schema={schema}
