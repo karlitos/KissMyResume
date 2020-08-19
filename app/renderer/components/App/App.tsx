@@ -2,7 +2,7 @@ import React,  { useState, useRef, Fragment } from 'react';
 import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
-import { VALID_INVOKE_CHANNELS, ICvDataReturnVal, INotification } from '../../../definitions'
+import {VALID_INVOKE_CHANNELS, ICvDataReturnVal, INotification, IThemeEntry} from '../../../definitions'
 import styles from './App.css'
 import { useThemeList } from "../../hooks/useThemeList";
 
@@ -15,7 +15,11 @@ export default function App()
     const [schema , setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
     const [cvData, setCvData] = useState({});
     const [notifications, setNotifications] = useState<Array<INotification>>([]);
-    const themeList = useThemeList();
+    const [themeFetchingError, themeList] = useThemeList();
+    // Add the error when theme-list fetching failed to the notifications
+    if (themeFetchingError) {
+        setNotifications([...notifications, themeFetchingError])
+    }
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
 
@@ -88,7 +92,7 @@ export default function App()
                 <select className="form-control">
                     <option key='0' disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
                     {
-                        themeList.map((theme, index) =>
+                        themeList.map((theme: IThemeEntry, index: number) =>
                             <option key={index+1}>{theme.name} - {theme.description}</option>
                         )
                     }

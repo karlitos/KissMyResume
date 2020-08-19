@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import ky from 'ky';
+import {INotification, IThemeEntry} from "../../definitions";
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
 const NPM_SEARCH_QUERY = 'jsonresume-theme';
 const NPM_SEARCH_SIZE = 250;
 
-export const useThemeList = (): any[] =>  {
+export const useThemeList = (): [INotification,IThemeEntry[]] =>  {
     const [themeList, setThemeList] = useState([]);
+    let err: INotification = null;
 
     useEffect(() => {
         const fetchThemeList = async () => {
@@ -31,16 +33,17 @@ export const useThemeList = (): any[] =>  {
                     }
                     return result;
                 }, []) : [];
-                // set theme list as result
+                // set result as theme list
                 setThemeList(mappedResults)
-            } catch (error) {
-                // Send an error to the renderer - TBD
-                console.log(error);
+            } catch (e) {
+                // pass the exception message as a warning-type notification
+                err = { type: 'warning', text: e.message }
+
             }
         };
         // calling async functions in useEffect prevents warnings, see: https://www.robinwieruch.de/react-hooks-fetch-data
         fetchThemeList();
     }, []);
 
-    return themeList;
+    return [err, themeList];
 };

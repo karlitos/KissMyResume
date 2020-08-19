@@ -21,3 +21,10 @@ export interface INotification {
     type: 'success' | 'info' | 'warning' | 'danger';
     text: string;
 }
+
+export interface IThemeEntry {
+    name: string ,
+    description: string,
+    version: string,
+    downloadLink: string,
+}
