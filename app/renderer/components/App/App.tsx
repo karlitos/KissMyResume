@@ -15,12 +15,12 @@ export default function App()
     const [schema , setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
     const [cvData, setCvData] = useState({});
     const [notifications, setNotifications] = useState<Array<INotification>>([]);
-    const [themeListFetchingError, themeList] = useThemeList();
+    const [themeListFetchingError, themeList, setThemeList] = useThemeList();
     // Add the error when theme-list fetching failed to the notifications
     if (themeListFetchingError) {
         setNotifications([...notifications, themeListFetchingError])
     }
-    const [fetchingTheme, setFetchingTheme] = useState(false);
+    const [fetchingThemeInProgress, setFetchingThemeInProgress] = useState(false);
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
 
@@ -64,21 +64,30 @@ export default function App()
      * Theme-list-change handler
      */
     const handleSelectThemeChange = (evt: ChangeEvent<HTMLSelectElement>) => {
-        if (fetchingTheme) {
+        if (fetchingThemeInProgress) {
             return
         }
-        const selectedTheme = themeList[parseInt(evt.target.value)];
+        const selectedThemeIndex = parseInt(evt.target.value);
+        const selectedTheme = themeList[selectedThemeIndex];
         // download the theme if not present yet
         if (!selectedTheme.present) {
+            // set the state of fetching-state-in-progress to true
+            setFetchingThemeInProgress(true);
             window.api.invoke(VALID_INVOKE_CHANNELS['fetch-theme'], selectedTheme).then(
                 () => {
-                    console.log('Theme fetched', selectedTheme)
+                    themeList[selectedThemeIndex]['present'] = true;
+                    // update the theme list
+                    setThemeList([...themeList]);
+                    // set the state of fetching-state-in-progress to false
+                    setFetchingThemeInProgress(false);
                 }).catch((err: PromiseRejectionEvent) => {
                 // display a warning notification
                 setNotifications([...notifications, {type: 'danger', text: `Fetching of theme ${selectedTheme.name} failed: ${err}`}])
             });
         } else {
-            console.log('Theme ready', selectedTheme)
+            // console.log('Theme ready', selectedTheme)
+            // set the state of fetching-state-in-progress to false
+            setFetchingThemeInProgress(false);
         }
     };
 
@@ -88,7 +97,7 @@ export default function App()
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
         window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData).then(
             (markup: string) => {
-                console.log(markup)
+                // console.log(markup)
         }).catch((err: PromiseRejectionEvent) => {
             // display a warning notification
             setNotifications([...notifications, {type: 'danger', text: `Processing of CV data failed: ${err}`}])
@@ -112,7 +121,7 @@ export default function App()
                     <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>Open CV</button>
                     <button className='btn btn-primary' onClick={handleSaveCvButtonClick}>Process CV</button>
                 </div>
-                <select className="form-control" defaultValue={'DEFAULT'} onChange={handleSelectThemeChange}>
+                <select className="form-control" defaultValue={'DEFAULT'} disabled={fetchingThemeInProgress} onChange={handleSelectThemeChange}>
                     <option key='0' value="DEFAULT" disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
                     {
                         themeList.map((theme: IThemeEntry, index: number) =>

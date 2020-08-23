@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import {INotification, IThemeEntry, VALID_INVOKE_CHANNELS} from "../../definitions";
 
-export const useThemeList = (): [INotification,IThemeEntry[]] =>  {
+export const useThemeList = (): [INotification, IThemeEntry[], Dispatch<SetStateAction<any>>] =>  {
     const [themeList, setThemeList] = useState([]);
     let err: INotification = null;
 
@@ -20,5 +20,5 @@ export const useThemeList = (): [INotification,IThemeEntry[]] =>  {
         fetchThemeList();
     }, []);
 
-    return [err, themeList];
+    return [err, themeList, setThemeList];
 };
