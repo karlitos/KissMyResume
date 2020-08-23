@@ -1,4 +1,4 @@
-import React,  { useState, useRef, Fragment } from 'react';
+import React,  { useState, useRef, Fragment, ChangeEvent } from 'react';
 import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
@@ -15,11 +15,12 @@ export default function App()
     const [schema , setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
     const [cvData, setCvData] = useState({});
     const [notifications, setNotifications] = useState<Array<INotification>>([]);
-    const [themeFetchingError, themeList] = useThemeList();
+    const [themeListFetchingError, themeList] = useThemeList();
     // Add the error when theme-list fetching failed to the notifications
-    if (themeFetchingError) {
-        setNotifications([...notifications, themeFetchingError])
+    if (themeListFetchingError) {
+        setNotifications([...notifications, themeListFetchingError])
     }
+    const [fetchingTheme, setFetchingTheme] = useState(false);
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
 
@@ -60,6 +61,28 @@ export default function App()
     };
 
     /**
+     * Theme-list-change handler
+     */
+    const handleSelectThemeChange = (evt: ChangeEvent<HTMLSelectElement>) => {
+        if (fetchingTheme) {
+            return
+        }
+        const selectedTheme = themeList[parseInt(evt.target.value)];
+        // download the theme if not present yet
+        if (!selectedTheme.present) {
+            window.api.invoke(VALID_INVOKE_CHANNELS['fetch-theme'], selectedTheme).then(
+                () => {
+                    console.log('Theme fetched', selectedTheme)
+                }).catch((err: PromiseRejectionEvent) => {
+                // display a warning notification
+                setNotifications([...notifications, {type: 'danger', text: `Fetching of theme ${selectedTheme.name} failed: ${err}`}])
+            });
+        } else {
+            console.log('Theme ready', selectedTheme)
+        }
+    };
+
+    /**
      * The submit-event handler.
      */
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
@@ -67,7 +90,7 @@ export default function App()
             (markup: string) => {
                 console.log(markup)
         }).catch((err: PromiseRejectionEvent) => {
-            // display a warning ...TBD
+            // display a warning notification
             setNotifications([...notifications, {type: 'danger', text: `Processing of CV data failed: ${err}`}])
         });
     };
@@ -89,11 +112,11 @@ export default function App()
                     <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>Open CV</button>
                     <button className='btn btn-primary' onClick={handleSaveCvButtonClick}>Process CV</button>
                 </div>
-                <select className="form-control">
-                    <option key='0' disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
+                <select className="form-control" defaultValue={'DEFAULT'} onChange={handleSelectThemeChange}>
+                    <option key='0' value="DEFAULT" disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
                     {
                         themeList.map((theme: IThemeEntry, index: number) =>
-                            <option key={index+1}>{theme.name} - {theme.description}</option>
+                            <option key={index+1} value={index}>{theme.present ? '✅' : '📥'} {theme.name} - {theme.description}</option>
                         )
                     }
                 </select>

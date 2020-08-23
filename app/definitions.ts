@@ -10,6 +10,8 @@ export enum VALID_INVOKE_CHANNELS {
     'open-cv' = 'open-cv',
     'process-cv' = 'process-cv',
     'save-cv' = 'save-cv',
+    'get-theme-list' = 'get-theme-list',
+    'fetch-theme' = 'fetch-theme',
 }
 
 export interface ICvDataReturnVal {
@@ -27,4 +29,5 @@ export interface IThemeEntry {
     description: string,
     version: string,
     downloadLink: string,
+    present: boolean,
 }

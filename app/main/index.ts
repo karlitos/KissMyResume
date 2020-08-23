@@ -1,11 +1,9 @@
-import { app, BrowserWindow, BrowserView, ipcMain, dialog, net } from 'electron';
-import * as fs from 'fs';
-declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-import { VALID_INVOKE_CHANNELS, ICvDataReturnVal } from '../definitions';
+import { app, BrowserView, BrowserWindow, ipcMain } from 'electron';
+import { VALID_INVOKE_CHANNELS } from '../definitions';
 import { PREVIEW_DEFAULT_MARKUP } from './preview'
-import { createMarkup } from '../../lib/build';
+import { fetchThemeListener, getThemeListListener, openCvListener, processCvListener } from "./ipc-event-listeners";
 
-const flatTheme = require('jsonresume-theme-flat');
+declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 
 // Comment our to see security warnings!
 // Further reading https://github.com/electron/electron/issues/19775
@@ -45,20 +43,20 @@ const createWindow = () => {
   mainWindow.addBrowserView(form);
   form.setBounds({ x: 0, y: 0, width: 400, height: 600 });
   form.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
-  form.webContents.loadURL(MAIN_WINDOW_WEBPACK_ENTRY
-      /*,
+  form.webContents.loadURL(MAIN_WINDOW_WEBPACK_ENTRY/*,
       {
         postData: [{
           type: 'rawData',
           bytes: Buffer.from('hello=world')
         }],
+        extraHeaders: 'Content-Type: application/x-www-form-urlencoded'
       }
       */
-  );￿
+  );
  form.webContents.openDevTools({ mode: 'undocked' });
 
   const preview = new BrowserView();
-  mainWindow.addBrowserView(preview)
+  mainWindow.addBrowserView(preview);
   preview.setBounds({ x: 400, y: 0, width: 400, height: 600 });
   preview.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
   preview.webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(PREVIEW_DEFAULT_MARKUP)}`);
@@ -89,43 +87,10 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], async (): Promise<ICvDataReturnVal> => {
-  try {
-    const openDialogReturnVal = await  dialog.showOpenDialog({
-      title: 'Open your CV data in JSON format',
-      filters: [
-        {
-          name: 'JSON files',
-          extensions: ['json'],
-        }
-      ],
-      properties: ['openFile']
-    });
+ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], openCvListener);
 
-    if (openDialogReturnVal && !openDialogReturnVal.canceled) {
-      //  built-in Promise implementations of the fs module
-      const cvData = await fs.promises.readFile(openDialogReturnVal.filePaths[0]);
-      return {
-        success: true,
-        data: JSON.parse(cvData.toString()),
-      };
-    }
-    // This causes unnecessary Error throwing  in the main process
-    // return Promise.reject('No files selected');
-    return {
-      success: true,
-      data: null,
-    };
-  } catch (err) {
-    return Promise.reject(`An error occurred when opening the CV data: ${err}`);
-  }
-});
+ipcMain.handle(VALID_INVOKE_CHANNELS['process-cv'], processCvListener);
 
-ipcMain.handle(VALID_INVOKE_CHANNELS['process-cv'], async (evt, cvData: Record<string, any>) => {
-  const markup = await createMarkup(cvData, flatTheme);
-  // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
-  // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
-  // alternatively https://github.com/remarkablemark/html-react-parser
-  BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
-  return Promise.resolve(markup);
-});
+ipcMain.handle(VALID_INVOKE_CHANNELS['get-theme-list'], getThemeListListener);
+
+ipcMain.handle(VALID_INVOKE_CHANNELS['fetch-theme'], fetchThemeListener);
