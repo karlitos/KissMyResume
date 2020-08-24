@@ -1,8 +1,8 @@
 import { ICvDataReturnVal, IThemeEntry } from '../definitions';
-import { BrowserView, dialog, IpcMainInvokeEvent } from "electron";
+import { BrowserView, dialog, IpcMainInvokeEvent } from 'electron';
 import * as fs from 'fs';
-import { createMarkup } from "../../lib/build";
-import { fetchTheme, getThemeList} from "./theme-helpers";
+import { createMarkup } from '../../lib/build';
+import { fetchTheme, getThemeList, getLocalTheme } from './theme-helpers';
 
 /**
  * The listener for events on the 'open-cv' channel
@@ -41,21 +41,20 @@ export const openCvListener = async (): Promise<ICvDataReturnVal> => {
 
 /**
  *
- */
-const flatTheme = require('jsonresume-theme-flat');
-
-/**
- *
  * @param evt
  * @param cvData
  */
-export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>) => {
-    const markup = await createMarkup(cvData, flatTheme);
-    // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
-    // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
-    // alternatively https://github.com/remarkablemark/html-react-parser
-    BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
-    return Promise.resolve(markup);
+export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry) => {
+    try {
+        const markup = await createMarkup(cvData, getLocalTheme(theme));
+        // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
+        // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
+        // alternatively https://github.com/remarkablemark/html-react-parser
+        BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
+        return Promise.resolve(markup);
+    } catch (err) {
+        return Promise.reject(err)
+    }
 };
 
 /**

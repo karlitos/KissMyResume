@@ -23,6 +23,7 @@ export default function App()
     const [fetchingThemeInProgress, setFetchingThemeInProgress] = useState(false);
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
+    const themeSelector = useRef<HTMLSelectElement>(null);
 
     // Logging helper
     const log = (type: any) => console.log.bind(console, type);
@@ -95,7 +96,8 @@ export default function App()
      * The submit-event handler.
      */
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
-        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData).then(
+        const selectedTheme = themeList[parseInt(themeSelector.current.value)];
+        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme ).then(
             (markup: string) => {
                 // console.log(markup)
         }).catch((err: PromiseRejectionEvent) => {
@@ -121,7 +123,11 @@ export default function App()
                     <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>Open CV</button>
                     <button className='btn btn-primary' onClick={handleSaveCvButtonClick}>Process CV</button>
                 </div>
-                <select className="form-control" defaultValue={'DEFAULT'} disabled={fetchingThemeInProgress} onChange={handleSelectThemeChange}>
+                <select className="form-control"
+                        defaultValue={'DEFAULT'}
+                        disabled={fetchingThemeInProgress}
+                        onChange={handleSelectThemeChange}
+                        ref={themeSelector}>
                     <option key='0' value="DEFAULT" disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
                     {
                         themeList.map((theme: IThemeEntry, index: number) =>

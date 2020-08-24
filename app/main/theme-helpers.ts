@@ -10,6 +10,9 @@ import tar from 'tar';
 
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
+// @ts-ignore
+const defaultTheme = __non_webpack_require__('jsonresume-theme-flat');
+
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
 const NPM_SEARCH_QUERY = 'jsonresume-theme';
 const NPM_SEARCH_SIZE = 250;
@@ -66,6 +69,7 @@ export const getThemeList  = async () => {
  */
 export const fetchTheme = async (theme: IThemeEntry) => {
     try {
+
         const themePath =  path.resolve(localThemesPath,theme.name);
 
         if (fs.existsSync(themePath)) {
@@ -82,4 +86,16 @@ export const fetchTheme = async (theme: IThemeEntry) => {
     } catch (err) {
         return Promise.reject(err)
     }
+};
+
+/**
+ *
+ */
+export const getLocalTheme = (theme: IThemeEntry) => {
+    if (!!theme) {
+        // @ts-ignore
+        return __non_webpack_require__(path.resolve(localThemesPath, theme.name));
+    }
+    // return default theme when no theme specified
+    return defaultTheme;
 };
