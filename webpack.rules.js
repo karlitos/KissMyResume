@@ -4,6 +4,7 @@ module.exports = [
     test: /\.node$/,
     use: 'node-loader',
   },
+    /*
   {
     test: /\.(m?js|node)$/,
     parser: { amd: false },
@@ -14,6 +15,7 @@ module.exports = [
       },
     },
   },
+  */
   {
     test: /\.tsx?$/,
     exclude: /(node_modules|\.webpack)/,

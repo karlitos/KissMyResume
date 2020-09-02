@@ -1,12 +1,11 @@
 import got from 'got';
 import * as path from 'path';
 import * as fs from 'fs';
+// @ts-ignore
 import { app } from 'electron';
 import { IThemeEntry } from '../definitions';
-import { promisify } from 'util';
-import { pipeline } from 'stream';
 // @ts-ignore
-import tar from 'tar';
+import { PluginManager } from 'live-plugin-manager';
 
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
@@ -17,8 +16,15 @@ const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
 const NPM_SEARCH_QUERY = 'jsonresume-theme';
 const NPM_SEARCH_SIZE = 250;
 
-const promisifiedPipeline = promisify(pipeline);
 const localThemesPath = path.resolve(app.getPath('appData'), app.getName(), 'themes');
+const pluginManager = new PluginManager({
+            pluginsPath: localThemesPath,
+            staticDependencies: {
+                fs: require('fs'),
+                path: require('path'),
+            }
+        });
+
 
 /**
  * For NPM API docs see https://api-docs.npms.io/
@@ -64,25 +70,13 @@ export const getThemeList  = async () => {
 };
 
 /**
- *
- * @param theme
+ * This is the method responsible for the actual theme retrieval. We retrieve the theme - actual a NPM package - with
+ * help of the 'live-plugin-manager'. The pluginManager.install call fetch the theme with all its dependencies from NPM.
+ * @param theme {IThemeEntry} The theme which should be fetched from NPM - we use the name-property as identifier.
  */
 export const fetchTheme = async (theme: IThemeEntry) => {
     try {
-
-        const themePath =  path.resolve(localThemesPath,theme.name);
-
-        if (fs.existsSync(themePath)) {
-            // remove the content of the directory when present
-            fs.rmdirSync(themePath, { recursive: true })
-        }
-        // create the theme directory
-        fs.mkdirSync(themePath);
-
-        await promisifiedPipeline(
-            got.stream(theme.downloadLink),
-            tar.extract({ cwd: themePath, strip: 1})
-        );
+        await pluginManager.install(theme.name);
     } catch (err) {
         return Promise.reject(err)
     }
@@ -91,11 +85,17 @@ export const fetchTheme = async (theme: IThemeEntry) => {
 /**
  *
  */
-export const getLocalTheme = (theme: IThemeEntry) => {
-    if (!!theme) {
-        // @ts-ignore
-        return __non_webpack_require__(path.resolve(localThemesPath, theme.name));
+export const getLocalTheme = async (theme: IThemeEntry) => {
+    try {
+        if (!!theme) {
+            // Wee need to call the install method even for cached packages, so the require method works whenever we
+            // switch to a new theme. See https://github.com/davideicardi/live-plugin-manager/issues/18
+            await pluginManager.install(theme.name);
+            return await pluginManager.require(theme.name);
+        }
+        // return default theme when no theme specified
+        return defaultTheme;
+    } catch (err) {
+        return Promise.reject(err)
     }
-    // return default theme when no theme specified
-    return defaultTheme;
 };

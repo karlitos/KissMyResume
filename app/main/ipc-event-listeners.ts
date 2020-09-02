@@ -46,7 +46,8 @@ export const openCvListener = async (): Promise<ICvDataReturnVal> => {
  */
 export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry) => {
     try {
-        const markup = await createMarkup(cvData, getLocalTheme(theme));
+        // IDEA: run the theme render fn in sandbox - https://www.npmjs.com/package/vm2
+        const markup = await createMarkup(cvData, await getLocalTheme(theme));
         // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
         // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
         // alternatively https://github.com/remarkablemark/html-react-parser
@@ -69,9 +70,10 @@ export const getThemeListListener = async () => {
 };
 
 /**
- *
- * @param evt
- * @param theme
+ * Just a wrapper for the 'fetchTheme' method from theme-helpers, since we define the listeners in this module but all
+ * theme-related stuff happens there, so we for example don't need to pass the live-plugin-manager instance reference.
+ * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener
+ * @param theme {IThemeEntry} The theme which should be fetched from NPM - we use the name-property as identifier.
  */
 export const fetchThemeListener = async (evt: IpcMainInvokeEvent, theme: IThemeEntry) => {
     try {
