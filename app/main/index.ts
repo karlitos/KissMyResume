@@ -1,4 +1,4 @@
-import { app, BrowserView, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserView, BrowserWindow, ipcMain, screen } from 'electron';
 import { VALID_INVOKE_CHANNELS } from '../definitions';
 import { PREVIEW_DEFAULT_MARKUP } from './preview'
 import { fetchThemeListener, getThemeListListener, openCvListener, processCvListener } from "./ipc-event-listeners";
@@ -15,10 +15,13 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createWindow = () => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height,
+    width,
+    minHeight: 600,
+    minWidth: 800,
     webPreferences: {
       nodeIntegration: false, // is default value after Electron v5
       contextIsolation: true, // protect against prototype pollution
@@ -26,12 +29,7 @@ const createWindow = () => {
     }
   });
 
-  // and load the index.html of the app.
-  // mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
-
+  // BrowserView for the resume-form
   const form = new BrowserView({
     webPreferences: {
     nodeIntegration: false, // is default value after Electron v5
@@ -41,8 +39,9 @@ const createWindow = () => {
     }
   });
   mainWindow.addBrowserView(form);
-  form.setBounds({ x: 0, y: 0, width: 400, height: 600 });
+  form.setBounds({ x: 0, y: 0, width: width/2, height });
   form.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
+  // load the index.html of the app in the form-BrowserView
   form.webContents.loadURL(MAIN_WINDOW_WEBPACK_ENTRY/*,
       {
         postData: [{
@@ -55,12 +54,14 @@ const createWindow = () => {
   );
  form.webContents.openDevTools({ mode: 'undocked' });
 
+ // BrowserView for the preview
   const preview = new BrowserView();
   mainWindow.addBrowserView(preview);
-  preview.setBounds({ x: 400, y: 0, width: 400, height: 600 });
+  preview.setBounds({ x: width/2, y: 0, width: width/2, height });
   preview.setAutoResize({ width: true, height: true, horizontal: true, vertical: true });
   preview.webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(PREVIEW_DEFAULT_MARKUP)}`);
   // preview.webContents.openDevTools({ mode: 'undocked' });
+  mainWindow.maximize();
 };
 
 // This method will be called when Electron has finished

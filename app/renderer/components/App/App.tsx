@@ -119,7 +119,7 @@ export default function App()
                 </div>
             </div>
             <div className="col-md-4 col-md-pull-8 xs-pb-15">
-                <div className="btn-toolbar" role="toolbar" aria-label="Upper toolbar with buttons">
+                <div className="btn-toolbar xs-pb-15" role="toolbar" aria-label="Upper toolbar with buttons">
                     <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>Open CV</button>
                     <button className='btn btn-primary' onClick={handleSaveCvButtonClick}>Process CV</button>
                 </div>
@@ -131,7 +131,8 @@ export default function App()
                     <option key='0' value="DEFAULT" disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
                     {
                         themeList.map((theme: IThemeEntry, index: number) =>
-                            <option key={index+1} value={index}>{theme.present ? '✅' : '📥'} {theme.name} - {theme.description}</option>
+                            // Note the explicit unicode white-space characters after the emoji characters
+                            <option key={index+1} value={index}>{theme.present ? '✅ ' : '📥 '} {theme.name} - {theme.description}</option>
                         )
                     }
                 </select>
