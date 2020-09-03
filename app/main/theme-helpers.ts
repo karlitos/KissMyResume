@@ -7,6 +7,8 @@ import { IThemeEntry } from '../definitions';
 // @ts-ignore
 import { PluginManager } from 'live-plugin-manager';
 
+
+const blacklistedThemes = require('./blacklisted-themes.json');
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
 // @ts-ignore
@@ -22,6 +24,7 @@ const pluginManager = new PluginManager({
             staticDependencies: {
                 fs: require('fs'),
                 path: require('path'),
+                util: require('util'),
             }
         });
 
@@ -50,7 +53,7 @@ export const getThemeList  = async () => {
 
         // return mapped results or empty array
         const themeList = !!response && !!response.objects ?  response.objects.reduce((result: Array<any>, pkg: Record<string, any>) => {
-            if (pkg.package.name.includes(NPM_SEARCH_QUERY)) {
+            if (pkg.package.name.includes(NPM_SEARCH_QUERY) && !blacklistedThemes.includes(pkg.package.name)) {
                 result.push( {
                     name: pkg.package.name,
                     description: pkg.package.description,
