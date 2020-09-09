@@ -1,4 +1,3 @@
-const path = require('path');
 const rules = require('./webpack.rules');
 const plugins = require('./webpack.plugins');
 
@@ -35,7 +34,7 @@ module.exports = {
     module: {
         rules,
     },
-    plugins: plugins,
+    plugins: [plugins.forkTsCheckerWebpackPlugin, plugins.optimizeCssnanoPlugin],
     resolve: {
         extensions: ['.js', '.ts', '.jsx', '.tsx', '.css']
     },

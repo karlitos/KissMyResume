@@ -1,3 +1,5 @@
+const plugins = require('./webpack.plugins');
+
 module.exports = {
   /**
    * This is the main entry point for your application, it's the first file
@@ -8,6 +10,7 @@ module.exports = {
   module: {
     rules: require('./webpack.rules'),
   },
+  plugins: [plugins.copyPlugin, plugins.webpackShellPlugin, plugins.definePlugin],
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json']
   },

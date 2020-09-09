@@ -1,8 +1,10 @@
 import { ICvDataReturnVal, IThemeEntry } from '../definitions';
 import { BrowserView, dialog, IpcMainInvokeEvent } from 'electron';
 import * as fs from 'fs';
-import { createMarkup } from '../../lib/build';
+import * as path from 'path';
+import { createMarkup, exportToMultipleFormats } from '../../lib/build';
 import { fetchTheme, getThemeList, getLocalTheme } from './theme-helpers';
+// import pie from 'puppeteer-in-electron';
 
 /**
  * The listener for events on the 'open-cv' channel
@@ -44,14 +46,57 @@ export const openCvListener = async (): Promise<ICvDataReturnVal> => {
  * @param evt
  * @param cvData
  */
-export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry) => {
+export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry,
+                                        exportCvAfterProcessing: boolean) => {
     try {
         // IDEA: run the theme render fn in sandbox - https://www.npmjs.com/package/vm2
         const markup = await createMarkup(cvData, await getLocalTheme(theme));
         // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
         // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
         // alternatively https://github.com/remarkablemark/html-react-parser
-        BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
+        await BrowserView.fromId(2).webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
+        // export if desired
+        if (exportCvAfterProcessing) {
+            // We would like to utilize the BrowserView and only use puppeteer to get the PDF and PNG
+            /*
+            const page = await pie.getPage(global.browser, BrowserView.fromId(2));
+            await page.pdf(
+                {
+                    format: 'A4',
+                    path: `${path.resolve('./resume out', 'RES')}.pdf`,
+                    printBackground: true,
+                });
+            logSuccess('The Resume in PDF format has been saved!');
+             */
+            /*
+            await page.screenshot(
+                {
+                    type: 'png',
+                    fullPage: true,
+                    path: `${path.resolve('./resume out', 'RES')}.png`,
+                });
+            logSuccess('The Resume in PNG format has been saved!');
+            */
+            /*
+            // We can't use the puppeteer inside of the electron easily, we export to PDF directly with the BrowserView API
+            const pdf = await BrowserView.fromId(2).webContents.printToPDF({
+                landscape: false,
+                pageSize: 'A4',
+                printBackground: true,
+            });
+            fs.writeFile(`${path.resolve('./resume out', 'RES')}.pdf`, pdf, (err) => {
+                if (err) throw err;
+                logSuccess('The Resume in PDF format has been saved!');
+            });
+            /*
+            await BrowserView.fromId(2).webContents.scre({
+                type: 'png',
+                fullPage: true,
+                path: `${path.resolve('./resume out', name)}.png`,
+            });
+            */
+            await exportToMultipleFormats(markup, 'RES', path.resolve('./resume out'), await getLocalTheme(theme), 'A4', ['pdf', 'docx', 'html'])
+        }
         return Promise.resolve(markup);
     } catch (err) {
         return Promise.reject(err)
@@ -59,7 +104,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
 };
 
 /**
- *
+ * Fetches the list of themes
  */
 export const getThemeListListener = async () => {
     try {

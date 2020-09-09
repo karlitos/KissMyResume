@@ -1,9 +1,29 @@
 import { app, BrowserView, BrowserWindow, ipcMain, screen } from 'electron';
 import { VALID_INVOKE_CHANNELS } from '../definitions';
 import { PREVIEW_DEFAULT_MARKUP } from './preview'
-import { fetchThemeListener, getThemeListListener, openCvListener, processCvListener } from "./ipc-event-listeners";
+import {
+  fetchThemeListener,
+  getThemeListListener,
+  openCvListener,
+  processCvListener,
+} from './ipc-event-listeners';
+// import pie from 'puppeteer-in-electron';
+// import puppeteer, { Browser } from 'puppeteer-core';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
+// see https://stackoverflow.com/a/42304473/1991697
+/*
+declare global {
+  namespace NodeJS {
+    interface Global {
+      document: Document;
+      window: Window;
+      navigator: Navigator;
+      browser: Browser;
+    }
+  }
+}
+*/
 
 // Comment our to see security warnings!
 // Further reading https://github.com/electron/electron/issues/19775
@@ -14,7 +34,16 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
   app.quit();
 }
 
-const createWindow = () => {
+// self invoking arrow function initializing the puppeteer-in-electron
+/*
+(async () => {
+  await pie.initialize(app);
+  // we add the browser reference to the global scope
+  global.browser = await pie.connect(app, puppeteer);
+})();
+*/
+
+const createWindow = async () => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
   const mainWindow = new BrowserWindow({

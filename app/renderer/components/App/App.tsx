@@ -21,6 +21,8 @@ export default function App()
         setNotifications([...notifications, themeListFetchingError])
     }
     const [fetchingThemeInProgress, setFetchingThemeInProgress] = useState(false);
+    const [processingThemeInProgress, setProcessingThemeInProgress] = useState(false);
+    const [exportCvAfterProcessing, setExportCvAfterProcessing] = useState(false);
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
     const themeSelector = useRef<HTMLSelectElement>(null);
@@ -55,9 +57,18 @@ export default function App()
     };
 
     /**
-     * Click-handler for the Save-cv-button which triggers the form-submit function programmatically.
+     * Click-handler for the Process-cv-button which triggers the form-submit function programmatically.
      */
-    const handleSaveCvButtonClick = () => {
+    const handleProcessCvButtonClick = () => {
+        cvForm.current.submit();
+    };
+
+    /**
+     * Click-handler for the Export-cv-button which triggers the .
+     */
+    const handleExportCvButtonClick = () => {
+        // set the export-after-processing flag to true
+        setExportCvAfterProcessing(true);
         cvForm.current.submit();
     };
 
@@ -74,21 +85,18 @@ export default function App()
         if (!selectedTheme.present) {
             // set the state of fetching-state-in-progress to true
             setFetchingThemeInProgress(true);
-            window.api.invoke(VALID_INVOKE_CHANNELS['fetch-theme'], selectedTheme).then(
-                () => {
-                    themeList[selectedThemeIndex]['present'] = true;
-                    // update the theme list
-                    setThemeList([...themeList]);
-                    // set the state of fetching-state-in-progress to false
-                    setFetchingThemeInProgress(false);
-                }).catch((err: PromiseRejectionEvent) => {
+            window.api.invoke(VALID_INVOKE_CHANNELS['fetch-theme'], selectedTheme)
+            .then(() => {
+                themeList[selectedThemeIndex]['present'] = true;
+                // update the theme list
+                setThemeList([...themeList]);
+            }).catch((err: PromiseRejectionEvent) => {
                 // display a warning notification
                 setNotifications([...notifications, {type: 'danger', text: `Fetching of theme ${selectedTheme.name} failed: ${err}`}])
+            }).finally(() => {
+                // set the state of fetching-state-in-progress to false
+                setFetchingThemeInProgress(false);
             });
-        } else {
-            // console.log('Theme ready', selectedTheme)
-            // set the state of fetching-state-in-progress to false
-            setFetchingThemeInProgress(false);
         }
     };
 
@@ -97,12 +105,19 @@ export default function App()
      */
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
         const selectedTheme = themeList[parseInt(themeSelector.current.value)];
-        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme ).then(
-            (markup: string) => {
-                // console.log(markup)
+        // set the state of processing-state-in-progress to true
+        setProcessingThemeInProgress(true);
+        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme, exportCvAfterProcessing )
+        .then((markup: string) => {
+            console.log(markup)
         }).catch((err: PromiseRejectionEvent) => {
             // display a warning notification
             setNotifications([...notifications, {type: 'danger', text: `Processing of CV data failed: ${err}`}])
+        }).finally(() => {
+            // set the state of fetching-state-in-progress to false
+            setProcessingThemeInProgress(false);
+            // set the export-after-processing flag to true
+            setExportCvAfterProcessing(true);
         });
     };
 
@@ -112,7 +127,7 @@ export default function App()
                 <span className="glyphicon glyphicon-info-sign float-left xs-pr-5 xs-pt-5" />
                 <div className={styles['notification-area']}>
                     {
-                        notifications.map((notification, index) =>
+                        notifications.map((notification: INotification, index: number) =>
                             <div className={`alert alert-slim alert-${notification.type}`} role="alert" key={index}>{notification.text}</div>
                         )
                     }
@@ -120,8 +135,19 @@ export default function App()
             </div>
             <div className="col-md-4 col-md-pull-8 xs-pb-15">
                 <div className="btn-toolbar xs-pb-15" role="toolbar" aria-label="Upper toolbar with buttons">
-                    <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>Open CV</button>
-                    <button className='btn btn-primary' onClick={handleSaveCvButtonClick}>Process CV</button>
+                    <button className='btn btn-primary' onClick={handleOpenCvButtonClick}>
+                        Open CV
+                    </button>
+                    <button className='btn btn-primary'
+                            onClick={handleProcessCvButtonClick}
+                            disabled={fetchingThemeInProgress || processingThemeInProgress}>
+                        Process CV
+                    </button>
+                    <button className='btn btn-success'
+                            onClick={handleExportCvButtonClick}
+                            disabled={fetchingThemeInProgress || processingThemeInProgress}>
+                        Export CV
+                    </button>
                 </div>
                 <select className="form-control"
                         defaultValue={'DEFAULT'}

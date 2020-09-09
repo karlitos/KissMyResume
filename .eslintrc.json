@@ -18,5 +18,8 @@
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
+  },
+  "rules": {
+    "object-curly-spacing": ["error", "always"]
   }
 }

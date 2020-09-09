@@ -12,10 +12,10 @@ const blacklistedThemes = require('./blacklisted-themes.json');
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
 // @ts-ignore
-const defaultTheme = __non_webpack_require__('jsonresume-theme-flat');
+const defaultTheme = require('jsonresume-theme-flat');
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
-const NPM_SEARCH_QUERY = 'jsonresume-theme';
+const NPM_SEARCH_QUERY = 'jsonresume-theme-';
 const NPM_SEARCH_SIZE = 250;
 
 const localThemesPath = path.resolve(app.getPath('appData'), app.getName(), 'themes');
@@ -25,6 +25,9 @@ const pluginManager = new PluginManager({
                 fs: require('fs'),
                 path: require('path'),
                 util: require('util'),
+                os: require('os'),
+                events: require('events'),
+                assert: require('assert'),
             }
         });
 
