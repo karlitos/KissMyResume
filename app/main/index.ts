@@ -6,24 +6,10 @@ import {
   getThemeListListener,
   openCvListener,
   processCvListener,
+  saveCvListener,
 } from './ipc-event-listeners';
-// import pie from 'puppeteer-in-electron';
-// import puppeteer, { Browser } from 'puppeteer-core';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
-// see https://stackoverflow.com/a/42304473/1991697
-/*
-declare global {
-  namespace NodeJS {
-    interface Global {
-      document: Document;
-      window: Window;
-      navigator: Navigator;
-      browser: Browser;
-    }
-  }
-}
-*/
 
 // Comment our to see security warnings!
 // Further reading https://github.com/electron/electron/issues/19775
@@ -33,15 +19,6 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
-
-// self invoking arrow function initializing the puppeteer-in-electron
-/*
-(async () => {
-  await pie.initialize(app);
-  // we add the browser reference to the global scope
-  global.browser = await pie.connect(app, puppeteer);
-})();
-*/
 
 const createWindow = async () => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -118,6 +95,8 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 ipcMain.handle(VALID_INVOKE_CHANNELS['open-cv'], openCvListener);
+
+ipcMain.handle(VALID_INVOKE_CHANNELS['save-cv'], saveCvListener);
 
 ipcMain.handle(VALID_INVOKE_CHANNELS['process-cv'], processCvListener);
 

@@ -87,16 +87,13 @@
     "node-loader": "^0.6.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.0",
-    "webpack-permissions-plugin": "^1.0.7",
-    "webpack-shell-plugin": "^0.5.0"
+    "typescript": "^3.7.0"
   },
   "dependencies": {
     "@caporal/core": "^2.0.2",
     "@rjsf/core": "^2.2.2",
     "bootstrap3": "^3.3.5",
     "chalk": "^2.4.2",
-    "chromium": "^3.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
     "ez-space-css": "^1.0.0",
@@ -113,7 +110,7 @@
     "minimist": "^1.2.5",
     "open": "^6.4.0",
     "promise.prototype.finally": "^3.1.2",
-    "puppeteer-core": "^5.2.1",
+    "puppeteer": "^5.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reload": "^3.1.0",

@@ -1,12 +1,11 @@
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const WebpackShellPlugin = require('webpack-shell-plugin');
-const PermissionsOutputPlugin = require('webpack-permissions-plugin');
 const { DefinePlugin } = require('webpack');
 
 const path = require('path');
-const chromium = require('chromium');
+const puppeteer = require('puppeteer');
+const exec = require('child_process').exec;
 
 module.exports = {
   forkTsCheckerWebpackPlugin: new ForkTsCheckerWebpackPlugin(),
@@ -18,23 +17,25 @@ module.exports = {
         to: path.resolve(__dirname, '.webpack/main/assets'),
       },
       {
-        from: path.resolve(__dirname, chromium.path.split('/lib')[0], 'lib'),
-        to: path.resolve(__dirname, '.webpack/main/'),
+        from: path.resolve(__dirname, puppeteer.executablePath().split('/.local-chromium')[0], '.local-chromium'),
+        to: path.resolve(__dirname, '.webpack/main/chromium'),
+        globOptions: {
+          followSymbolicLinks: false,
+        }
       },
     ],
   }),
-  webpackShellPlugin: new WebpackShellPlugin(
-      {
-        onBuildStart: [],
-        onBuildEnd: [`chmod -R 755 ${path.resolve(__dirname, '.webpack/main/chromium/')}`]}),
-  permissionsOutputPlugin: new PermissionsOutputPlugin({
-    buildFolders: {
-      path: path.resolve(__dirname, '.webpack/main/chromium/'),
-      fileMode: '755',
-      dirMode: '644'
-    }
-  }),
+  runShellAfterEmitPlugin: {
+    apply: (compiler) => {
+      compiler.hooks.afterEmit.tap('AfterEmitPlugin', (compilation) => {
+        exec(`chmod -R 755 ${path.resolve(__dirname, '.webpack/main/chromium/')}`, (err, stdout, stderr) => {
+          if (stdout) process.stdout.write(stdout);
+          if (stderr) process.stderr.write(stderr);
+        });
+      });
+    },
+  },
   definePlugin: new DefinePlugin({
-    CHROMIUM_BINARY: JSON.stringify(path.resolve(__dirname, '.webpack/main/', chromium.path.split('/lib/')[1])),
+    CHROMIUM_BINARY: JSON.stringify(path.join('chromium', puppeteer.executablePath().split('/.local-chromium/')[1])),
   }),
 };

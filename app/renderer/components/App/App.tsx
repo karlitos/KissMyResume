@@ -2,7 +2,7 @@ import React,  { useState, useRef, Fragment, ChangeEvent } from 'react';
 import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
-import {VALID_INVOKE_CHANNELS, ICvDataReturnVal, INotification, IThemeEntry} from '../../../definitions'
+import { VALID_INVOKE_CHANNELS, INotification, IThemeEntry } from '../../../definitions'
 import styles from './App.css'
 import { useThemeList } from "../../hooks/useThemeList";
 
@@ -35,13 +35,13 @@ export default function App()
      * then manually validated against the current schema of the Form.
      */
     const handleOpenCvButtonClick = () => {
-        window.api.invoke(VALID_INVOKE_CHANNELS['open-cv']).then((result: ICvDataReturnVal) => {
-            if (result.success) {
-                const { errorSchema, errors } = cvForm.current.validate(result.data, schema, [metaSchemaDraft04]);
+        window.api.invoke(VALID_INVOKE_CHANNELS['open-cv']).then((result: null | Record<string, any>) => {
+            if (result) {
+                const { errorSchema, errors } = cvForm.current.validate(result, schema, [metaSchemaDraft04]);
                 if (errors && errors.length) {
                     setNotifications([...notifications, {type: 'warning', text: `${errors.length} validations errors found in the loaded data.`}])
                 }
-                setCvData(result.data);
+                setCvData(result);
             }
         }).catch((err: PromiseRejectionEvent) => {
             // display a warning ...TBD
@@ -64,12 +64,21 @@ export default function App()
     };
 
     /**
-     * Click-handler for the Export-cv-button which triggers the .
+     * Click-handler for the Export-cv-button which triggers the CV export.
      */
     const handleExportCvButtonClick = () => {
         // set the export-after-processing flag to true
         setExportCvAfterProcessing(true);
         cvForm.current.submit();
+    };
+
+    /**
+     * Click-handler for the Save-cv-data-button which triggers the cv data save invocation.
+     */
+    const handleSaveCvDataClick  = () => {
+        window.api.invoke(VALID_INVOKE_CHANNELS['save-cv'], cvData).then(() => {
+            console.log('svae done')
+        })
     };
 
     /**
@@ -109,7 +118,7 @@ export default function App()
         setProcessingThemeInProgress(true);
         window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme, exportCvAfterProcessing )
         .then((markup: string) => {
-            console.log(markup)
+            // TODO: success notification
         }).catch((err: PromiseRejectionEvent) => {
             // display a warning notification
             setNotifications([...notifications, {type: 'danger', text: `Processing of CV data failed: ${err}`}])
@@ -143,10 +152,14 @@ export default function App()
                             disabled={fetchingThemeInProgress || processingThemeInProgress}>
                         Process CV
                     </button>
-                    <button className='btn btn-success'
+                    <button className='btn btn-success pull-right'
                             onClick={handleExportCvButtonClick}
                             disabled={fetchingThemeInProgress || processingThemeInProgress}>
                         Export CV
+                    </button>
+                    <button className='btn pull-right'
+                            onClick={handleSaveCvDataClick}>
+                        Save CV data
                     </button>
                 </div>
                 <select className="form-control"

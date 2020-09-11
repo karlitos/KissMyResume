@@ -14,11 +14,6 @@ export enum VALID_INVOKE_CHANNELS {
     'fetch-theme' = 'fetch-theme',
 }
 
-export interface ICvDataReturnVal {
-    success: boolean;
-    data: null | Record<string, any>;
-}
-
 export interface INotification {
     type: 'success' | 'info' | 'warning' | 'danger';
     text: string;

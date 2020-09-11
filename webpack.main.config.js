@@ -10,7 +10,7 @@ module.exports = {
   module: {
     rules: require('./webpack.rules'),
   },
-  plugins: [plugins.copyPlugin, plugins.webpackShellPlugin, plugins.definePlugin],
+  plugins: [plugins.copyPlugin, plugins.runShellAfterEmitPlugin, plugins.definePlugin],
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json']
   },
