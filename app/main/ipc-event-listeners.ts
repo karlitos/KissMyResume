@@ -1,10 +1,13 @@
 import { IThemeEntry } from '../definitions';
-import { BrowserView, dialog, IpcMainInvokeEvent } from 'electron';
+import { BrowserView, BrowserWindow, dialog, IpcMainInvokeEvent } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import { createMarkup, exportToMultipleFormats } from '../../lib/build';
 import { fetchTheme, getThemeList, getLocalTheme } from './theme-helpers';
-import {jsonRegex} from "ts-loader/dist/constants";
+import { logSuccess } from '../../lib/log';
+
+let OFFSCREEN_RENDERER: BrowserWindow;
+const CV_EXPORT_TIMEOUT = 5000;
 
 /**
  * The listener for events on the 'open-cv' channel
@@ -65,11 +68,52 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
             });
 
             if (saveDialogReturnVal && !saveDialogReturnVal.canceled) {
-                await exportToMultipleFormats(markup, path.basename(saveDialogReturnVal.filePath), path.dirname(saveDialogReturnVal.filePath), await getLocalTheme(theme), 'A4', ['pdf', 'docx', 'html'])
+                // PDF export
+                const pdfData = await BrowserView.fromId(2).webContents.printToPDF({pageSize: 'A4', landscape: false});
+                await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.pdf`, pdfData);
+                logSuccess('The Resume in PDF format has been saved!');
+
+                const pageRect = await BrowserView.fromId(2).webContents.executeJavaScript(
+                    `(() => { return {x: 0, y: 0, width: document.body.offsetWidth, height: document.body.offsetHeight}})()`);
+
+                OFFSCREEN_RENDERER = new BrowserWindow({
+                    enableLargerThanScreen: true,
+                    show: false,
+                    webPreferences: {
+                        offscreen: true,
+                        nodeIntegration: false, // is default value after Electron v5
+                        contextIsolation: true, // protect against prototype pollution
+                        enableRemoteModule: false, // turn off remote
+                    }
+                });
+
+                const timeout = setTimeout(() => { throw 'Exporting of the resume timed out!'}, CV_EXPORT_TIMEOUT);
+
+                // Export the 'painted' image as screenshot
+                OFFSCREEN_RENDERER.webContents.on('paint', async (evt, dirtyRect, image) => {
+                    await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.png`, image.toPNG());
+                    clearTimeout(timeout);
+                    logSuccess('The Resume in PNG format has been saved!');
+                    OFFSCREEN_RENDERER.destroy();
+                });
+
+                // PNG export
+                OFFSCREEN_RENDERER.setContentSize(pageRect.width, pageRect.height);
+                await OFFSCREEN_RENDERER.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
+                await OFFSCREEN_RENDERER.webContents.insertCSS('html, body {overflow: hidden}');
+                // const screenshot = await OFFSCREEN_RENDERER.webContents.capturePage(pageRect);
+                // await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.png`, screenshot.toPNG());
+                // logSuccess('The Resume in PNG format has been saved!');
+
+                // HTML & DOCX export
+                await exportToMultipleFormats(markup, path.basename(saveDialogReturnVal.filePath), path.dirname(saveDialogReturnVal.filePath), await getLocalTheme(theme), 'A4', [ 'docx', 'html'])
             }
         }
         return Promise.resolve(markup);
     } catch (err) {
+        if (OFFSCREEN_RENDERER && !OFFSCREEN_RENDERER.isDestroyed()) {
+            OFFSCREEN_RENDERER.destroy();
+        }
         return Promise.reject(`An error occurred when exporting the resume: ${err}`)
     }
 };

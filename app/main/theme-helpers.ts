@@ -6,13 +6,12 @@ import { app } from 'electron';
 import { IThemeEntry } from '../definitions';
 // @ts-ignore
 import { PluginManager } from 'live-plugin-manager';
-
-
-const blacklistedThemes = require('./blacklisted-themes.json');
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
+const blacklistedThemes = require('./blacklisted-themes.json');
+
 // @ts-ignore
-const defaultTheme = require('jsonresume-theme-flat');
+const defaultTheme = __non_webpack_require__('jsonresume-theme-flat');
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
 const NPM_SEARCH_QUERY = 'jsonresume-theme-';

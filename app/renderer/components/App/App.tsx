@@ -113,6 +113,7 @@ export default function App()
      * The submit-event handler.
      */
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
+        console.log(document.body.offsetWidth, document.body.offsetHeight)
         const selectedTheme = themeList[parseInt(themeSelector.current.value)];
         // set the state of processing-state-in-progress to true
         setProcessingThemeInProgress(true);
@@ -171,7 +172,7 @@ export default function App()
                     {
                         themeList.map((theme: IThemeEntry, index: number) =>
                             // Note the explicit unicode white-space characters after the emoji characters
-                            <option key={index+1} value={index}>{theme.present ? '✅ ' : '📥 '} {theme.name} - {theme.description}</option>
+                            <option key={index+1} value={index}>{theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}</option>
                         )
                     }
                 </select>
