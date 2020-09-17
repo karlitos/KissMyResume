@@ -34,6 +34,9 @@ module.exports = {
     module: {
         rules,
     },
+    output: {
+        publicPath: './../',
+    },
     plugins: [plugins.forkTsCheckerWebpackPlugin, plugins.optimizeCssnanoPlugin],
     resolve: {
         extensions: ['.js', '.ts', '.jsx', '.tsx', '.css']

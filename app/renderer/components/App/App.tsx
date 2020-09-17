@@ -4,7 +4,7 @@ import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
 import { VALID_INVOKE_CHANNELS, INotification, IThemeEntry } from '../../../definitions'
 import styles from './App.css'
-import { useThemeList } from "../../hooks/useThemeList";
+import { useThemeList } from '../../hooks/useThemeList';
 
 // read https://github.com/async-library/react-async
 export default function App()
@@ -77,7 +77,7 @@ export default function App()
      */
     const handleSaveCvDataClick  = () => {
         window.api.invoke(VALID_INVOKE_CHANNELS['save-cv'], cvData).then(() => {
-            console.log('svae done')
+            console.log('save done')
         })
     };
 
@@ -113,7 +113,6 @@ export default function App()
      * The submit-event handler.
      */
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
-        console.log(document.body.offsetWidth, document.body.offsetHeight)
         const selectedTheme = themeList[parseInt(themeSelector.current.value)];
         // set the state of processing-state-in-progress to true
         setProcessingThemeInProgress(true);

@@ -6,12 +6,11 @@ import { app } from 'electron';
 import { IThemeEntry } from '../definitions';
 // @ts-ignore
 import { PluginManager } from 'live-plugin-manager';
+// @ts-ignore
+import DEFAULT_THEME from 'jsonresume-theme-flat';
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
 const blacklistedThemes = require('./blacklisted-themes.json');
-
-// @ts-ignore
-const defaultTheme = __non_webpack_require__('jsonresume-theme-flat');
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
 const NPM_SEARCH_QUERY = 'jsonresume-theme-';
@@ -99,7 +98,7 @@ export const getLocalTheme = async (theme: IThemeEntry) => {
             return await pluginManager.require(theme.name);
         }
         // return default theme when no theme specified
-        return defaultTheme;
+        return DEFAULT_THEME;
     } catch (err) {
         return Promise.reject(err)
     }
