@@ -40,8 +40,23 @@ export const openCvListener = async (): Promise<null | Record<string, any>> => {
 /**
  * The listener for events on the 'save-cv' channel
  */
-export const saveCvListener = async (cvData: Record<string, any>): Promise<any> => {
-    console.log(JSON.stringify(cvData))
+export const saveCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>): Promise<any> => {
+    try {
+        const saveDialogReturnVal = await  dialog.showSaveDialog({
+            title: 'Select where to save your resume in JSON format',
+            showsTagField: false,
+            properties: ['createDirectory', 'showOverwriteConfirmation']
+        });
+
+        if (saveDialogReturnVal && !saveDialogReturnVal.canceled) {
+            const parsedFilePath = path.parse(saveDialogReturnVal.filePath);
+            await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.json`, cvData);
+        }
+
+        return Promise.resolve();
+    } catch (err) {
+        return Promise.reject(err)
+    }
 };
 
 /**
@@ -68,9 +83,11 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
             });
 
             if (saveDialogReturnVal && !saveDialogReturnVal.canceled) {
+                const parsedFilePath = path.parse(saveDialogReturnVal.filePath);
+
                 // PDF export
                 const pdfData = await BrowserView.fromId(2).webContents.printToPDF({pageSize: 'A4', landscape: false});
-                await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.pdf`, pdfData);
+                await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.pdf`, pdfData);
                 logSuccess('The Resume in PDF format has been saved!');
 
                 const pageRect = await BrowserView.fromId(2).webContents.executeJavaScript(
@@ -91,7 +108,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
 
                 // Export the 'painted' image as screenshot
                 OFFSCREEN_RENDERER.webContents.on('paint', async (evt, dirtyRect, image) => {
-                    await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.png`, image.toPNG());
+                    await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.png`, image.toPNG());
                     clearTimeout(timeout);
                     logSuccess('The Resume in PNG format has been saved!');
                     OFFSCREEN_RENDERER.destroy();
@@ -106,7 +123,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
                 // logSuccess('The Resume in PNG format has been saved!');
 
                 // HTML & DOCX export
-                await exportToMultipleFormats(markup, path.basename(saveDialogReturnVal.filePath), path.dirname(saveDialogReturnVal.filePath), await getLocalTheme(theme), 'A4', [ 'docx', 'html'])
+                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, await getLocalTheme(theme), 'A4', [ 'docx', 'html'])
             }
         }
         return Promise.resolve(markup);

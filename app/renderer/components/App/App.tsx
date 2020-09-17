@@ -23,6 +23,7 @@ export default function App()
     const [fetchingThemeInProgress, setFetchingThemeInProgress] = useState(false);
     const [processingThemeInProgress, setProcessingThemeInProgress] = useState(false);
     const [exportCvAfterProcessing, setExportCvAfterProcessing] = useState(false);
+    const [saveCvDataInProgress, setSaveCvDataInProgress] = useState(false);
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
     const themeSelector = useRef<HTMLSelectElement>(null);
@@ -46,7 +47,7 @@ export default function App()
         }).catch((err: PromiseRejectionEvent) => {
             // display a warning ...TBD
             setNotifications([...notifications, {type: 'danger', text: `Opening of CV data failed: ${err}`}])
-        });
+        })
     };
 
     /**
@@ -76,9 +77,16 @@ export default function App()
      * Click-handler for the Save-cv-data-button which triggers the cv data save invocation.
      */
     const handleSaveCvDataClick  = () => {
-        window.api.invoke(VALID_INVOKE_CHANNELS['save-cv'], cvData).then(() => {
-            console.log('save done')
-        })
+        setSaveCvDataInProgress(true);
+        window.api.invoke(VALID_INVOKE_CHANNELS['save-cv'], JSON.stringify(cvData)).then(() => {
+            // TODO: notification
+        }) .catch((err: PromiseRejectionEvent) => {
+            // display a warning ...TBD
+            setNotifications([...notifications, {type: 'danger', text: `Saving of CV data failed: ${err}`}])
+        }).finally(() => {
+            // set the state of fetching-state-in-progress to false
+            setSaveCvDataInProgress(false);
+        });
     };
 
     /**
@@ -158,7 +166,8 @@ export default function App()
                         Export CV
                     </button>
                     <button className='btn pull-right'
-                            onClick={handleSaveCvDataClick}>
+                            onClick={handleSaveCvDataClick}
+                            disabled={saveCvDataInProgress}>
                         Save CV data
                     </button>
                 </div>
