@@ -78,7 +78,7 @@ export default function App()
      */
     const handleSaveCvDataClick  = () => {
         setSaveCvDataInProgress(true);
-        window.api.invoke(VALID_INVOKE_CHANNELS['save-cv'], JSON.stringify(cvData)).then(() => {
+        window.api.invoke(VALID_INVOKE_CHANNELS['save-cv'], cvData).then(() => {
             // TODO: notification
         }) .catch((err: PromiseRejectionEvent) => {
             // display a warning ...TBD
@@ -133,8 +133,8 @@ export default function App()
         }).finally(() => {
             // set the state of fetching-state-in-progress to false
             setProcessingThemeInProgress(false);
-            // set the export-after-processing flag to true
-            setExportCvAfterProcessing(true);
+            // set the export-after-processing flag to false
+            setExportCvAfterProcessing(false);
         });
     };
 

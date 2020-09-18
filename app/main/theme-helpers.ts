@@ -10,7 +10,7 @@ import { PluginManager } from 'live-plugin-manager';
 import DEFAULT_THEME from 'jsonresume-theme-flat';
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
 
-const blacklistedThemes = require('./blacklisted-themes.json');
+const blacklistedThemes = require('../blacklisted-themes.json');
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org/';
 const NPM_SEARCH_QUERY = 'jsonresume-theme-';
@@ -26,6 +26,9 @@ const pluginManager = new PluginManager({
                 os: require('os'),
                 events: require('events'),
                 assert: require('assert'),
+                http: require('http'),
+                https: require('https'),
+                url: require('url'),
             }
         });
 
@@ -91,7 +94,7 @@ export const fetchTheme = async (theme: IThemeEntry) => {
  */
 export const getLocalTheme = async (theme: IThemeEntry) => {
     try {
-        if (!!theme) {
+        if (!!theme && theme.name !== DEFUALT_THEME_NAME) {
             // Wee need to call the install method even for cached packages, so the require method works whenever we
             // switch to a new theme. See https://github.com/davideicardi/live-plugin-manager/issues/18
             await pluginManager.install(theme.name);

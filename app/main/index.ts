@@ -58,7 +58,7 @@ const createWindow = async () => {
       }
       */
   );
- form.webContents.openDevTools({ mode: 'undocked' });
+ // form.webContents.openDevTools({ mode: 'undocked' });
 
  // BrowserView for the preview
   const preview = new BrowserView();

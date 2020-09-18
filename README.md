@@ -12,9 +12,13 @@ The project is still WIP and in very early stage. It targets following shortcomi
 
 ## Current status
 
-To provide best support for the [broad variety of 3rd party themes](https://www.npmjs.com/search?q=jsonresume-theme) the [official release (0.0.0)](https://github.com/jsonresume/resume-schema/releases/tag/0.0.0) of Json-resume schema is supported and used for validation. 
+To provide best support for the [broad variety of 3rd party themes](https://www.npmjs.com/search?q=jsonresume-theme) the [official release (0.0.0)](https://github.com/jsonresume/resume-schema/releases/tag/0.0.0) of Json-resume schema is supported and used for validation.
 
-### Currently supported
+Since the version 1.0.0 there is a Desktop App build with [electron](www.electronjs.org) and [electron-forge](https://www.electronforge.io/) which is currently still in very early __beta__ stage. So far it allows to create resumes with a web-form generated automatically from the json-resume-scheme, allows to open and validate resumes in JSON format, render them and export in the same formats as the CLI. The GUI utilizes the CLI, so all the original functionality was preserved.
+
+The App allows to download the jsonresume-themes from NPM automatically and use them for rendering. I can not guarantee, that all 3rd party themes will work, around 30-40 were tested with satisfactory results, so far a bunch of them had to be blacklisted. In a case a theme shall not work, please open an issue on Github.
+
+### Currently supported in the CLI
  
 * [x] CLI - implemented with the [Caporal.js](https://github.com/mattallty/Caporal.js) framework.
 * [x] Support for resumes in [JSON-resume](https://jsonresume.org/) format
@@ -29,14 +33,20 @@ To provide best support for the [broad variety of 3rd party themes](https://www.
 * [x] Empty resume initialization
 * [x] Resume HTML live preview with hot-reload
 
-### Work In Progress
+
+### Desktop App
 * [x] Resume forms (Electron App + live preview + [react-jsonschema-form](https://github.com/mozilla-services/react-jsonschema-form))
   * [x] Initial app built around react and react-jsonschema-form works
   * [x] Created app Tested on MacOs
   * [x] Allows to read json-resume data to the form
-  * [ ] Further integration with the CLI
+  * [x] Further integration with the CLI
+  * [x] Split-pane with preview
+  * [x] Theme support with possibility to download jsonresume-themes from NPM
+  * [ ] Possibility to delete downloaded themes
+  * [ ] Support for local themes
+  * [x] Export of the rendered resume in ALL formats
+  * [ ] Selecting formats for export
   * [ ] More mature GUI, improved styling
-  * [ ] Split-pane with live-preview
 
 ### To do
 

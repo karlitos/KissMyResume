@@ -39,6 +39,8 @@ export const openCvListener = async (): Promise<null | Record<string, any>> => {
 
 /**
  * The listener for events on the 'save-cv' channel
+ * @param evt {IpcMainInvokeEvent} The invoke event
+ * @param cvData {Object} The structured CV data
  */
 export const saveCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>): Promise<any> => {
     try {
@@ -50,7 +52,7 @@ export const saveCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<str
 
         if (saveDialogReturnVal && !saveDialogReturnVal.canceled) {
             const parsedFilePath = path.parse(saveDialogReturnVal.filePath);
-            await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.json`, cvData);
+            await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.json`,  JSON.stringify(cvData));
         }
 
         return Promise.resolve();
@@ -60,9 +62,11 @@ export const saveCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<str
 };
 
 /**
- *
- * @param evt
- * @param cvData
+ * Method processing the CD data an doing the export in different format if desired.
+ * @param evt {IpcMainInvokeEvent} The invoke event
+ * @param cvData {Object} The structured CV data
+ * @param theme {IThemeEntry} The selected theme which should be used for creating HTML markup
+ * @param exportCvAfterProcessing {boolean} Whether ot
  */
 export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry,
                                         exportCvAfterProcessing: boolean) => {
@@ -131,7 +135,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
         if (OFFSCREEN_RENDERER && !OFFSCREEN_RENDERER.isDestroyed()) {
             OFFSCREEN_RENDERER.destroy();
         }
-        return Promise.reject(`An error occurred when exporting the resume: ${err}`)
+        return Promise.reject(`An error occurred when processing the resume: ${err}`)
     }
 };
 
