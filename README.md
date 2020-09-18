@@ -4,6 +4,8 @@ _[HackMyResume](https://github.com/hacksalot/HackMyResume) but [Keep it simple, 
 
 ![Screencast](./screencast.gif)
 
+![App-Screencast](./app-screencast.gif)
+
 The project is still WIP and in very early stage. It targets following shortcomings of the __HackMyResume__ [1] and __resume-cli__ [2] tools:
 * missing support for asynchronous template rendering (1,2)
 * PDF export relying on 3rd party tools (1)
