@@ -1,7 +1,7 @@
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { DefinePlugin } = require('webpack');
+const { DefinePlugin, ProvidePlugin } = require('webpack');
 
 const path = require('path');
 // const puppeteer = require('puppeteer');
@@ -17,6 +17,12 @@ const path = require('path');
 module.exports = {
   forkTsCheckerWebpackPlugin: new ForkTsCheckerWebpackPlugin(),
   optimizeCssnanoPlugin: new OptimizeCssnanoPlugin({}),
+  provideJqueryPlugin: new ProvidePlugin({
+    $: 'jquery',
+    jquery: 'jquery',
+    'window.jQuery': 'jquery',
+    jQuery:'jquery'
+  }),
   copyPlugin: new CopyPlugin({
     patterns: [
       // This fix missing assets for html-docx-js

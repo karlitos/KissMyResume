@@ -165,6 +165,33 @@ export default function App()
                             disabled={fetchingThemeInProgress || processingThemeInProgress}>
                         Export CV
                     </button>
+                    <div className="btn-group pull-right" role="group">
+                        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            Select output formats
+                            <span className="caret"></span>
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <div className="checkbox">
+                                    <label><input type="checkbox" value=""/>Document PDF</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="checkbox">
+                                    <label><input type="checkbox" value=""/>Image PNG</label>
+                                </div>
+                            </li><li>
+                            <div className="checkbox">
+                                <label><input type="checkbox" value=""/>Website HTML</label>
+                            </div>
+                        </li><li>
+                            <div className="checkbox">
+                                <label><input type="checkbox" value=""/>Word DOCX</label>
+                            </div>
+                        </li>
+                        </ul>
+                    </div>
                     <button className='btn pull-right'
                             onClick={handleSaveCvDataClick}
                             disabled={saveCvDataInProgress}>

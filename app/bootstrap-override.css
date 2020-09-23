@@ -13,3 +13,7 @@
 .form-control {
     height: 36px;
 }
+
+.btn .caret, .dropdown-menu > li > .checkbox {
+    margin-left: 1em;
+}
