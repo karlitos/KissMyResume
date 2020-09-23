@@ -20,6 +20,12 @@ export default function App()
     if (themeListFetchingError) {
         setNotifications([...notifications, themeListFetchingError])
     }
+    const [selectedFormatsForExport, setSelectedFormatsForExport] = useState({
+       pdf: true,
+       png: false,
+       html: false,
+       docx: false,
+    } as Record<string, any>);
     const [fetchingThemeInProgress, setFetchingThemeInProgress] = useState(false);
     const [processingThemeInProgress, setProcessingThemeInProgress] = useState(false);
     const [exportCvAfterProcessing, setExportCvAfterProcessing] = useState(false);
@@ -52,6 +58,7 @@ export default function App()
 
     /**
      * Form-data-change handler making react-jsonschema-form controlled component.
+     * @param changeEvent {IChangeEvent} The rjsf-form change event
      */
     const handleFormDataChange = (changeEvent: IChangeEvent) => {
         setCvData(changeEvent.formData);
@@ -62,6 +69,23 @@ export default function App()
      */
     const handleProcessCvButtonClick = () => {
         cvForm.current.submit();
+    };
+
+    /**
+     * Checkbox change-handler updating the state of the selected output formats
+     * @param evt {HTMLInputElement} The change event of the checkbox
+     */
+    const handleFormatsForExportChange = (evt: ChangeEvent<HTMLInputElement>) => {
+        // ignore the setter in case of undefined or other monkey business
+        if (typeof selectedFormatsForExport[evt.target.name] === "boolean") {
+            const newSelectedFormatsForExportState = { ...selectedFormatsForExport, [evt.target.name]: evt.target.checked };
+            // Do not allow unselecting all formats
+            if (Object.keys(newSelectedFormatsForExportState).every((k) => !newSelectedFormatsForExportState[k])) {
+                setNotifications([...notifications, {type: 'warning', text: 'At least one format must be selected for export!'}])
+                return;
+            }
+            setSelectedFormatsForExport({...selectedFormatsForExport, [evt.target.name]: evt.target.checked})
+        }
     };
 
     /**
@@ -124,7 +148,7 @@ export default function App()
         const selectedTheme = themeList[parseInt(themeSelector.current.value)];
         // set the state of processing-state-in-progress to true
         setProcessingThemeInProgress(true);
-        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme, exportCvAfterProcessing )
+        window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme, selectedFormatsForExport, exportCvAfterProcessing )
         .then((markup: string) => {
             // TODO: success notification
         }).catch((err: PromiseRejectionEvent) => {
@@ -165,6 +189,49 @@ export default function App()
                             disabled={fetchingThemeInProgress || processingThemeInProgress}>
                         Export CV
                     </button>
+                    <div className="btn-group pull-right" role="group">
+                        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            Select output formats
+                            <span className="caret"></span>
+                        </button>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="pdf" onChange={handleFormatsForExportChange}
+                                                  checked={selectedFormatsForExport['pdf']}/>
+                                        Document PDF
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="png" onChange={handleFormatsForExportChange}
+                                               checked={selectedFormatsForExport['png']}/>
+                                        Image PNG
+                                    </label>
+                                </div>
+                            </li><li>
+                            <div className="checkbox">
+                                <label>
+                                    <input type="checkbox" name="html" onChange={handleFormatsForExportChange}
+                                           checked={selectedFormatsForExport['html']}/>
+                                    Website HTML
+                                </label>
+                            </div>
+                        </li><li>
+                            <div className="checkbox">
+                                <label>
+                                    <input type="checkbox" name="docx" onChange={handleFormatsForExportChange}
+                                           checked={selectedFormatsForExport['docx']}/>
+                                    Word DOCX
+                                </label>
+                            </div>
+                        </li>
+                        </ul>
+                    </div>
                     <button className='btn pull-right'
                             onClick={handleSaveCvDataClick}
                             disabled={saveCvDataInProgress}>

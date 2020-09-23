@@ -66,10 +66,11 @@ export const saveCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<str
  * @param evt {IpcMainInvokeEvent} The invoke event
  * @param cvData {Object} The structured CV data
  * @param theme {IThemeEntry} The selected theme which should be used for creating HTML markup
- * @param exportCvAfterProcessing {boolean} Whether ot
+ * @param selectedFormatsForExport {Object} The object with the selected formats for export
+ * @param exportCvAfterProcessing {boolean} Whether or not should the CV be exported after processing
  */
 export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry,
-                                        exportCvAfterProcessing: boolean) => {
+                                        selectedFormatsForExport: Record<string, any>, exportCvAfterProcessing: boolean) => {
     try {
         // IDEA: run the theme render fn in sandbox - https://www.npmjs.com/package/vm2
         const markup = await createMarkup(cvData, await getLocalTheme(theme));
@@ -90,44 +91,55 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
                 const parsedFilePath = path.parse(saveDialogReturnVal.filePath);
 
                 // PDF export
-                const pdfData = await BrowserView.fromId(2).webContents.printToPDF({pageSize: 'A4', landscape: false});
-                await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.pdf`, pdfData);
-                logSuccess('The Resume in PDF format has been saved!');
+                if (selectedFormatsForExport.pdf) {
+                    const pdfData = await BrowserView.fromId(2).webContents.printToPDF({pageSize: 'A4', landscape: false});
+                    await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.pdf`, pdfData);
+                    logSuccess('The Resume in PDF format has been saved!');
+                }
 
-                const pageRect = await BrowserView.fromId(2).webContents.executeJavaScript(
-                    `(() => { return {x: 0, y: 0, width: document.body.offsetWidth, height: document.body.offsetHeight}})()`);
+                if (selectedFormatsForExport.png) {
+                    const pageRect = await BrowserView.fromId(2).webContents.executeJavaScript(
+                        `(() => { return {x: 0, y: 0, width: document.body.offsetWidth, height: document.body.offsetHeight}})()`);
 
-                OFFSCREEN_RENDERER = new BrowserWindow({
-                    enableLargerThanScreen: true,
-                    show: false,
-                    webPreferences: {
-                        offscreen: true,
-                        nodeIntegration: false, // is default value after Electron v5
-                        contextIsolation: true, // protect against prototype pollution
-                        enableRemoteModule: false, // turn off remote
+                    OFFSCREEN_RENDERER = new BrowserWindow({
+                        enableLargerThanScreen: true,
+                        show: false,
+                        webPreferences: {
+                            offscreen: true,
+                            nodeIntegration: false, // is default value after Electron v5
+                            contextIsolation: true, // protect against prototype pollution
+                            enableRemoteModule: false, // turn off remote
+                        }
+                    });
+
+                    const timeout = setTimeout(() => { throw 'Exporting of the resume timed out!'}, CV_EXPORT_TIMEOUT);
+
+                    // Export the 'painted' image as screenshot
+                    OFFSCREEN_RENDERER.webContents.on('paint', async (evt, dirtyRect, image) => {
+                        await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.png`, image.toPNG());
+                        clearTimeout(timeout);
+                        logSuccess('The Resume in PNG format has been saved!');
+                        OFFSCREEN_RENDERER.destroy();
+                    });
+
+                    // PNG export
+                    OFFSCREEN_RENDERER.setContentSize(pageRect.width, pageRect.height);
+                    await OFFSCREEN_RENDERER.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
+                    await OFFSCREEN_RENDERER.webContents.insertCSS('html, body {overflow: hidden}');
+                    // const screenshot = await OFFSCREEN_RENDERER.webContents.capturePage(pageRect);
+                    // await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.png`, screenshot.toPNG());
+                    // logSuccess('The Resume in PNG format has been saved!');
+                }
+
+                const remainingOutputFormats = Object.keys(selectedFormatsForExport).reduce((formats, currentFormat): Array<string> => {
+                    if (currentFormat !== 'pdf' && currentFormat !== 'png' && selectedFormatsForExport[currentFormat]) {
+                        formats.push(currentFormat);
                     }
-                });
-
-                const timeout = setTimeout(() => { throw 'Exporting of the resume timed out!'}, CV_EXPORT_TIMEOUT);
-
-                // Export the 'painted' image as screenshot
-                OFFSCREEN_RENDERER.webContents.on('paint', async (evt, dirtyRect, image) => {
-                    await fs.promises.writeFile(`${path.resolve(parsedFilePath.dir, parsedFilePath.name)}.png`, image.toPNG());
-                    clearTimeout(timeout);
-                    logSuccess('The Resume in PNG format has been saved!');
-                    OFFSCREEN_RENDERER.destroy();
-                });
-
-                // PNG export
-                OFFSCREEN_RENDERER.setContentSize(pageRect.width, pageRect.height);
-                await OFFSCREEN_RENDERER.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(markup)}`);
-                await OFFSCREEN_RENDERER.webContents.insertCSS('html, body {overflow: hidden}');
-                // const screenshot = await OFFSCREEN_RENDERER.webContents.capturePage(pageRect);
-                // await fs.promises.writeFile(`${saveDialogReturnVal.filePath}.png`, screenshot.toPNG());
-                // logSuccess('The Resume in PNG format has been saved!');
+                    return formats;
+                }, []);
 
                 // HTML & DOCX export
-                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, await getLocalTheme(theme), 'A4', [ 'docx', 'html'])
+                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, await getLocalTheme(theme), 'A4', remainingOutputFormats);
             }
         }
         return Promise.resolve(markup);

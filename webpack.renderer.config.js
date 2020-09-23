@@ -37,7 +37,7 @@ module.exports = {
     output: {
         publicPath: './../',
     },
-    plugins: [plugins.forkTsCheckerWebpackPlugin, plugins.optimizeCssnanoPlugin],
+    plugins: [plugins.forkTsCheckerWebpackPlugin, plugins.optimizeCssnanoPlugin, plugins.provideJqueryPlugin],
     resolve: {
         extensions: ['.js', '.ts', '.jsx', '.tsx', '.css']
     },

@@ -47,7 +47,7 @@ The App allows to download the jsonresume-themes from NPM automatically and use 
   * [ ] Possibility to delete downloaded themes
   * [ ] Support for local themes
   * [x] Export of the rendered resume in ALL formats
-  * [ ] Selecting formats for export
+  * [x] Selecting formats for export
   * [ ] More mature GUI, improved styling
 
 ### To do
