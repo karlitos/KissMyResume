@@ -26,3 +26,35 @@ body {
 .text-left-right {
   text-align: right !important;
 }
+
+.running-stripes:after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: repeating-linear-gradient(45deg, #5cb85c80, #5cb85c40 15px, transparent 17px, transparent 35px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background-size: 49px;
+    animation: stripe-slide 15s infinite linear forwards;
+}
+
+@-webkit-keyframes stripe-slide {
+    0% {
+        background-position: 0% 0;
+    }
+    100% {
+        background-position: 100% 0;
+    }
+}
+@keyframes stripe-slide {
+    0% {
+        background-position: 0% 0;
+    }
+    100% {
+        background-position: 100% 0;
+    }
+}

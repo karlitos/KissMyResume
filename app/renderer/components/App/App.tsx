@@ -20,6 +20,7 @@ export default function App()
     if (themeListFetchingError) {
         setNotifications([...notifications, themeListFetchingError])
     }
+    const [selectedThemeIndex, setSelectedThemeIndex] = useState(null);
     const [selectedFormatsForExport, setSelectedFormatsForExport] = useState({
        pdf: true,
        png: false,
@@ -32,7 +33,6 @@ export default function App()
     const [saveCvDataInProgress, setSaveCvDataInProgress] = useState(false);
     // The ref to the Form component
     const cvForm = useRef<Form<{}>>(null);
-    const themeSelector = useRef<HTMLSelectElement>(null);
 
     // Logging helper
     const log = (type: any) => console.log.bind(console, type);
@@ -81,7 +81,7 @@ export default function App()
             const newSelectedFormatsForExportState = { ...selectedFormatsForExport, [evt.target.name]: evt.target.checked };
             // Do not allow unselecting all formats
             if (Object.keys(newSelectedFormatsForExportState).every((k) => !newSelectedFormatsForExportState[k])) {
-                setNotifications([...notifications, {type: 'warning', text: 'At least one format must be selected for export!'}])
+                setNotifications([...notifications, {type: 'warning', text: 'At least one format must be selected for export!'}]);
                 return;
             }
             setSelectedFormatsForExport({...selectedFormatsForExport, [evt.target.name]: evt.target.checked})
@@ -116,19 +116,20 @@ export default function App()
     /**
      * Theme-list-change handler
      */
-    const handleSelectThemeChange = (evt: ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectThemeChange = (themeIndex: number) => {
         if (fetchingThemeInProgress) {
             return
         }
-        const selectedThemeIndex = parseInt(evt.target.value);
-        const selectedTheme = themeList[selectedThemeIndex];
+        // update state
+        setSelectedThemeIndex(themeIndex);
+        const selectedTheme = themeList[themeIndex];
         // download the theme if not present yet
         if (!selectedTheme.present) {
             // set the state of fetching-state-in-progress to true
             setFetchingThemeInProgress(true);
             window.api.invoke(VALID_INVOKE_CHANNELS['fetch-theme'], selectedTheme)
             .then(() => {
-                themeList[selectedThemeIndex]['present'] = true;
+                themeList[themeIndex]['present'] = true;
                 // update the theme list
                 setThemeList([...themeList]);
             }).catch((err: PromiseRejectionEvent) => {
@@ -142,10 +143,22 @@ export default function App()
     };
 
     /**
+     *
+     */
+    const createLabelForThemeSelector = () => {
+        if (selectedThemeIndex === null) {
+            return  'Select theme, default: jsonresume-theme-flat - A theme for JSON Resume';
+        }
+        const theme = themeList[selectedThemeIndex];
+        // Note the explicit unicode white-space characters after the emoji characters*/}
+        return `${theme.present ? '✅ ' : '📥 '} ${theme.name} ${theme.description ? '- ' : '' }${theme.description}`
+    };
+
+    /**
      * The submit-event handler.
      */
     const handleFormSubmit = (submitEvent: ISubmitEvent<any>) => {
-        const selectedTheme = themeList[parseInt(themeSelector.current.value)];
+        const selectedTheme = themeList[selectedThemeIndex];
         // set the state of processing-state-in-progress to true
         setProcessingThemeInProgress(true);
         window.api.invoke(VALID_INVOKE_CHANNELS['process-cv'], submitEvent.formData, selectedTheme, selectedFormatsForExport, exportCvAfterProcessing )
@@ -240,30 +253,18 @@ export default function App()
                         Save CV data
                     </button>
                 </div>
-                <select className="form-control"
-                        defaultValue={'DEFAULT'}
-                        disabled={fetchingThemeInProgress}
-                        onChange={handleSelectThemeChange}
-                        ref={themeSelector}>
-                    <option key='0' value="DEFAULT" disabled>Select theme, default: jsonresume-theme-flat - A theme for JSON Resume</option>
-                    {
-                        themeList.map((theme: IThemeEntry, index: number) =>
-                            // Note the explicit unicode white-space characters after the emoji characters
-                            <option key={index+1} value={index}>{theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}</option>
-                        )
-                    }
-                </select>
                 <div className="btn-group full-width" role="group">
-                    <button type="button" className="btn btn-default btn-block dropdown-toggle force-text-left" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Select theme, default: jsonresume-theme-flat - A theme for JSON Resume
+                    <button type="button" className={`btn btn-default btn-block dropdown-toggle force-text-left
+                            ${fetchingThemeInProgress ? 'running-stripes' : ''}`}  data-toggle="dropdown"
+                            disabled={fetchingThemeInProgress} aria-haspopup="true" aria-expanded="false">
+                        {createLabelForThemeSelector()}
                         <span className="caret caret-right"></span>
                     </button>
                     <ul className={`${styles['theme-list-container']} dropdown-menu`}>
                         {
                             themeList.map((theme: IThemeEntry, index: number) =>
                                 // Note the explicit unicode white-space characters after the emoji characters
-                                <li className={styles['theme-list-entry']}  key={index} >
+                                <li className={styles['theme-list-entry']}  key={index} onClick={handleSelectThemeChange.bind(this, index)}>
                                     {theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}
                                 </li>
                             )
