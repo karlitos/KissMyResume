@@ -4,3 +4,20 @@
     border: 1px ridge #ccc;
     border-radius: 4px;
 }
+
+.theme-list-entry {
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    padding: 0 1em;
+}
+
+.theme-list-container {
+    width: 100%;
+    max-height: calc(100vh - 230px);
+    overflow: auto;
+}
+
+.theme-list-entry:hover {
+    backdrop-filter: brightness(0.9);
+}

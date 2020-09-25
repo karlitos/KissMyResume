@@ -213,23 +213,25 @@ export default function App()
                                         Image PNG
                                     </label>
                                 </div>
-                            </li><li>
-                            <div className="checkbox">
-                                <label>
-                                    <input type="checkbox" name="html" onChange={handleFormatsForExportChange}
-                                           checked={selectedFormatsForExport['html']}/>
-                                    Website HTML
-                                </label>
-                            </div>
-                        </li><li>
-                            <div className="checkbox">
-                                <label>
-                                    <input type="checkbox" name="docx" onChange={handleFormatsForExportChange}
-                                           checked={selectedFormatsForExport['docx']}/>
-                                    Word DOCX
-                                </label>
-                            </div>
-                        </li>
+                            </li>
+                            <li>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="html" onChange={handleFormatsForExportChange}
+                                               checked={selectedFormatsForExport['html']}/>
+                                        Website HTML
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="docx" onChange={handleFormatsForExportChange}
+                                               checked={selectedFormatsForExport['docx']}/>
+                                        Word DOCX
+                                    </label>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                     <button className='btn pull-right'
@@ -251,6 +253,23 @@ export default function App()
                         )
                     }
                 </select>
+                <div className="btn-group full-width" role="group">
+                    <button type="button" className="btn btn-default btn-block dropdown-toggle force-text-left" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Select theme, default: jsonresume-theme-flat - A theme for JSON Resume
+                        <span className="caret caret-right"></span>
+                    </button>
+                    <ul className={`${styles['theme-list-container']} dropdown-menu`}>
+                        {
+                            themeList.map((theme: IThemeEntry, index: number) =>
+                                // Note the explicit unicode white-space characters after the emoji characters
+                                <li className={styles['theme-list-entry']}  key={index} >
+                                    {theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}
+                                </li>
+                            )
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
 		<Form schema={schema}

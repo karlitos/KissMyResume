@@ -14,3 +14,15 @@ body {
 .float-right {
   float: right;
 }
+
+.full-width {
+  width: 100%;
+}
+
+.force-text-left {
+  text-align: left !important;
+}
+
+.text-left-right {
+  text-align: right !important;
+}
