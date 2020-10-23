@@ -27,6 +27,10 @@ body {
   text-align: right !important;
 }
 
+.flex {
+    display: flex;
+}
+
 .running-stripes:after {
     content: '';
     display: block;

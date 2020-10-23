@@ -254,10 +254,10 @@ export default function App()
                     </button>
                 </div>
                 <div className="btn-group full-width" role="group">
-                    <button type="button" className={`btn btn-default btn-block dropdown-toggle force-text-left
+                    <button type="button" className={`btn btn-default btn-block dropdown-toggle force-text-left flex
                             ${fetchingThemeInProgress ? 'running-stripes' : ''}`}  data-toggle="dropdown"
                             disabled={fetchingThemeInProgress} aria-haspopup="true" aria-expanded="false">
-                        {createLabelForThemeSelector()}
+                        <span className={styles['theme-list-dropdown-text']}>{createLabelForThemeSelector()}</span>
                         <span className="caret caret-right"></span>
                     </button>
                     <ul className={`${styles['theme-list-container']} dropdown-menu`}>

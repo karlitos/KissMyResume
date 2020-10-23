@@ -5,6 +5,12 @@
     border-radius: 4px;
 }
 
+.theme-list-dropdown-text {
+    width: calc(100% - 20px); /* button-padding + caret width */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .theme-list-entry {
     white-space: nowrap;
     overflow-x: hidden;
