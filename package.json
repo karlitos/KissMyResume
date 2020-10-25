@@ -16,13 +16,14 @@
   "config": {
     "forge": {
       "packagerConfig": {
+        "name": "KissMyResume",
         "icon": "./app/assets/kiss-my-resume"
       },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "my_new_app"
+            "name": "KissMyResume"
           }
         },
         {

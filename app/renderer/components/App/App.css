@@ -12,10 +12,22 @@
 }
 
 .theme-list-entry {
+    display: flex;
     white-space: nowrap;
     overflow-x: hidden;
     text-overflow: ellipsis;
     padding: 0 1em;
+}
+
+.theme-list-entry > span:first-child {
+    width: calc(100% - 28px - 1em);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.theme-list-entry > span:nth-child(2) {
+    padding-left: 1em;
+    margin-left: auto;
 }
 
 .theme-list-container {
