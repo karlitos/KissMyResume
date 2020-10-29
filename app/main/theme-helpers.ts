@@ -91,6 +91,7 @@ export const fetchTheme = async (theme: IThemeEntry) => {
 
 /**
  *
+ * {IThemeEntry} The theme which should installed from NPM - we use the name-property as identifier.
  */
 export const getLocalTheme = async (theme: IThemeEntry) => {
     try {
@@ -102,6 +103,18 @@ export const getLocalTheme = async (theme: IThemeEntry) => {
         }
         // return default theme when no theme specified
         return DEFAULT_THEME;
+    } catch (err) {
+        return Promise.reject(err)
+    }
+};
+
+/**
+ *
+ * {IThemeEntry} The theme which should be uninstalled - we use the name-property as identifier.
+ */
+export const uninstallTheme = async (theme: IThemeEntry) => {
+    try {
+        await pluginManager.uninstall(theme.name);
     } catch (err) {
         return Promise.reject(err)
     }

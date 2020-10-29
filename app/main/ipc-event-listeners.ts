@@ -3,7 +3,7 @@ import { BrowserView, BrowserWindow, dialog, IpcMainInvokeEvent } from 'electron
 import * as fs from 'fs';
 import * as path from 'path';
 import { createMarkup, exportToMultipleFormats } from '../../lib/build';
-import { fetchTheme, getThemeList, getLocalTheme } from './theme-helpers';
+import { uninstallTheme, fetchTheme, getThemeList, getLocalTheme } from './theme-helpers';
 import { logSuccess } from '../../lib/log';
 
 let OFFSCREEN_RENDERER: BrowserWindow;
@@ -171,6 +171,19 @@ export const getThemeListListener = async () => {
 export const fetchThemeListener = async (evt: IpcMainInvokeEvent, theme: IThemeEntry) => {
     try {
         return await fetchTheme(theme);
+    } catch (err) {
+        return Promise.reject(err)
+    }
+};
+
+/**
+ *
+ * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener
+ * @param theme {IThemeEntry} The theme which should be fetched from NPM - we use the name-property as identifier.
+ */
+export const uninstallThemeListener = async (evt: IpcMainInvokeEvent, theme: IThemeEntry) => {
+    try {
+        return await uninstallTheme(theme);
     } catch (err) {
         return Promise.reject(err)
     }

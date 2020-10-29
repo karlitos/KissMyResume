@@ -12,6 +12,7 @@ export enum VALID_INVOKE_CHANNELS {
     'save-cv' = 'save-cv',
     'get-theme-list' = 'get-theme-list',
     'fetch-theme' = 'fetch-theme',
+    'uninstall-theme' = 'uninstall-theme',
 }
 
 export interface INotification {

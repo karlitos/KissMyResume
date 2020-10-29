@@ -16,7 +16,7 @@
     white-space: nowrap;
     overflow-x: hidden;
     text-overflow: ellipsis;
-    padding: 0 1em;
+    padding: 0.15em 1em;
 }
 
 .theme-list-entry > span:first-child {
@@ -28,6 +28,10 @@
 .theme-list-entry > span:nth-child(2) {
     padding-left: 1em;
     margin-left: auto;
+}
+
+.theme-list-entry > span:nth-child(2):hover {
+    filter: brightness(0.9);
 }
 
 .theme-list-container {

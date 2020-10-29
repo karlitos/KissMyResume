@@ -31,6 +31,10 @@ body {
     display: flex;
 }
 
+.cursor-pointer{
+    cursor: pointer;
+}
+
 .running-stripes:after {
     content: '';
     display: block;

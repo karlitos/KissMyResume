@@ -1,4 +1,4 @@
-import React,  { useState, useRef, Fragment, ChangeEvent } from 'react';
+import React,  { useState, useRef, Fragment, ChangeEvent, SyntheticEvent } from 'react';
 import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
 import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
 import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
@@ -27,7 +27,7 @@ export default function App()
        html: false,
        docx: false,
     } as Record<string, any>);
-    const [fetchingThemeInProgress, setFetchingThemeInProgress] = useState(false);
+    const [themeManagerBusy, setThemeManagerBusy] = useState(false);
     const [processingThemeInProgress, setProcessingThemeInProgress] = useState(false);
     const [exportCvAfterProcessing, setExportCvAfterProcessing] = useState(false);
     const [saveCvDataInProgress, setSaveCvDataInProgress] = useState(false);
@@ -117,7 +117,7 @@ export default function App()
      * Theme-list-change handler
      */
     const handleSelectThemeChange = (themeIndex: number) => {
-        if (fetchingThemeInProgress) {
+        if (themeManagerBusy) {
             return
         }
         // update state
@@ -125,8 +125,8 @@ export default function App()
         const selectedTheme = themeList[themeIndex];
         // download the theme if not present yet
         if (!selectedTheme.present) {
-            // set the state of fetching-state-in-progress to true
-            setFetchingThemeInProgress(true);
+            // set the state of theme-manager-busy to true
+            setThemeManagerBusy(true);
             window.api.invoke(VALID_INVOKE_CHANNELS['fetch-theme'], selectedTheme)
             .then(() => {
                 themeList[themeIndex]['present'] = true;
@@ -137,9 +137,37 @@ export default function App()
                 setNotifications([...notifications, {type: 'danger', text: `Fetching of theme ${selectedTheme.name} failed: ${err}`}])
             }).finally(() => {
                 // set the state of fetching-state-in-progress to false
-                setFetchingThemeInProgress(false);
+                setThemeManagerBusy(false);
             });
         }
+    };
+
+    /**
+     *
+     * @param themeIndex
+     * @param evt
+     */
+    const handleUninstallThemeClick =  (themeIndex: number, evt: SyntheticEvent) => {
+        evt.stopPropagation()
+        if (themeManagerBusy) {
+            return
+        }
+        const selectedTheme = themeList[themeIndex];
+        setThemeManagerBusy(true);
+        window.api.invoke(VALID_INVOKE_CHANNELS['uninstall-theme'], selectedTheme)
+            .then(() => {
+                themeList[themeIndex]['present'] = false;
+                // update the theme list
+                setThemeList([...themeList]);
+                // unselect the uninstalled theme - set to explicit null
+                setSelectedThemeIndex(null)
+            }).catch((err: PromiseRejectionEvent) => {
+            // display a warning notification
+            setNotifications([...notifications, {type: 'danger', text: `Uninstalling of theme ${selectedTheme.name} failed: ${err}`}])
+        }).finally(() => {
+            // set the state of fetching-state-in-progress to false
+            setThemeManagerBusy(false);
+        });
     };
 
     /**
@@ -194,12 +222,12 @@ export default function App()
                     </button>
                     <button className='btn btn-primary'
                             onClick={handleProcessCvButtonClick}
-                            disabled={fetchingThemeInProgress || processingThemeInProgress}>
+                            disabled={themeManagerBusy || processingThemeInProgress}>
                         Process CV
                     </button>
                     <button className='btn btn-success pull-right'
                             onClick={handleExportCvButtonClick}
-                            disabled={fetchingThemeInProgress || processingThemeInProgress}>
+                            disabled={themeManagerBusy || processingThemeInProgress}>
                         Export CV
                     </button>
                     <div className="btn-group pull-right" role="group">
@@ -255,8 +283,8 @@ export default function App()
                 </div>
                 <div className="btn-group full-width" role="group">
                     <button type="button" className={`btn btn-default btn-block dropdown-toggle force-text-left flex
-                            ${fetchingThemeInProgress ? 'running-stripes' : ''}`}  data-toggle="dropdown"
-                            disabled={fetchingThemeInProgress} aria-haspopup="true" aria-expanded="false">
+                            ${themeManagerBusy ? 'running-stripes' : ''}`}  data-toggle="dropdown"
+                            disabled={themeManagerBusy} aria-haspopup="true" aria-expanded="false">
                         <span className={styles['theme-list-dropdown-text']}>{createLabelForThemeSelector()}</span>
                         <span className="caret caret-right"></span>
                     </button>
@@ -265,7 +293,10 @@ export default function App()
                             themeList.map((theme: IThemeEntry, index: number) =>
                                 // Note the explicit unicode white-space characters after the emoji characters
                                 <li className={styles['theme-list-entry']}  key={index} onClick={handleSelectThemeChange.bind(this, index)}>
-                                    {theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}
+                                    <span>
+                                        {theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}
+                                    </span>
+                                    {theme.present ? <span className="cursor-pointer" onClick={handleUninstallThemeClick.bind(this, index)}>❌</span> : ''}
                                 </li>
                             )
                         }
