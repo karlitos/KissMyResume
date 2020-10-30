@@ -148,7 +148,9 @@ export default function App()
      * @param evt
      */
     const handleUninstallThemeClick =  (themeIndex: number, evt: SyntheticEvent) => {
-        evt.stopPropagation()
+        // Stop closing the dropdown on click
+        evt.stopPropagation();
+        evt.nativeEvent.stopImmediatePropagation();
         if (themeManagerBusy) {
             return
         }
@@ -238,40 +240,32 @@ export default function App()
                         </button>
                         <ul className="dropdown-menu">
                             <li>
-                                <div className="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="pdf" onChange={handleFormatsForExportChange}
-                                                  checked={selectedFormatsForExport['pdf']}/>
-                                        Document PDF
-                                    </label>
-                                </div>
+                                <label className="checkbox">
+                                    <input type="checkbox" name="pdf" onChange={handleFormatsForExportChange}
+                                           checked={selectedFormatsForExport['pdf']}/>
+                                    Document PDF
+                                </label>
                             </li>
                             <li>
-                                <div className="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="png" onChange={handleFormatsForExportChange}
-                                               checked={selectedFormatsForExport['png']}/>
-                                        Image PNG
-                                    </label>
-                                </div>
+                                <label className="checkbox">
+                                    <input type="checkbox" name="png" onChange={handleFormatsForExportChange}
+                                           checked={selectedFormatsForExport['png']}/>
+                                    Image PNG
+                                </label>
                             </li>
                             <li>
-                                <div className="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="html" onChange={handleFormatsForExportChange}
-                                               checked={selectedFormatsForExport['html']}/>
-                                        Website HTML
-                                    </label>
-                                </div>
+                                <label className="checkbox">
+                                    <input type="checkbox" name="html" onChange={handleFormatsForExportChange}
+                                           checked={selectedFormatsForExport['html']}/>
+                                    Website HTML
+                                </label>
                             </li>
                             <li>
-                                <div className="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="docx" onChange={handleFormatsForExportChange}
-                                               checked={selectedFormatsForExport['docx']}/>
-                                        Word DOCX
-                                    </label>
-                                </div>
+                                <label className="checkbox">
+                                    <input type="checkbox" name="docx" onChange={handleFormatsForExportChange}
+                                           checked={selectedFormatsForExport['docx']}/>
+                                    Word DOCX
+                                </label>
                             </li>
                         </ul>
                     </div>

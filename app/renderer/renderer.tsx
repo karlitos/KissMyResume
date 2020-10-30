@@ -26,10 +26,10 @@
  * ```
  */
 
-// Don't change the order, override has to come after the main bootstrap
+// Don't change the order, override AND the index.css has to come after the main bootstrap
 import 'bootstrap3/dist/js/bootstrap';
 import 'bootstrap3/dist/css/bootstrap.min.css?raw';
-import '../bootstrap-override.css?raw';
+// import '../bootstrap-override.css?raw';
 import '../index.css?raw';
 import 'ez-space-css/css/ez-space.css?raw';
 

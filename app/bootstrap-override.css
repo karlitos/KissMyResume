@@ -22,3 +22,12 @@
     float: right;
     margin: 8px 0;
 }
+
+/* This is an amalgamation of Bootstraps .checkbox .label and .checkbox, .radio */
+label.checkbox {
+    min-height: 20px;
+    padding-left: 20px;
+    margin-bottom: 10px;
+    font-weight: 400;
+    cursor: pointer;
+}
