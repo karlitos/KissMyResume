@@ -13,6 +13,7 @@ export enum VALID_INVOKE_CHANNELS {
     'get-theme-list' = 'get-theme-list',
     'fetch-theme' = 'fetch-theme',
     'uninstall-theme' = 'uninstall-theme',
+    'install-local-theme' = 'install-local-theme',
 }
 
 export interface INotification {

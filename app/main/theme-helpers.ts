@@ -6,6 +6,7 @@ import { app } from 'electron';
 import { IThemeEntry } from '../definitions';
 // @ts-ignore
 import { PluginManager } from 'live-plugin-manager';
+import extractExports from 'extract-module-exports'
 // @ts-ignore
 import DEFAULT_THEME from 'jsonresume-theme-flat';
 export const DEFUALT_THEME_NAME = 'jsonresume-theme-flat';
@@ -91,9 +92,9 @@ export const fetchTheme = async (theme: IThemeEntry) => {
 
 /**
  *
- * {IThemeEntry} The theme which should installed from NPM - we use the name-property as identifier.
+ * @param theme {IThemeEntry} The theme which should installed from NPM - we use the name-property as identifier.
  */
-export const getLocalTheme = async (theme: IThemeEntry) => {
+export const getlTheme = async (theme: IThemeEntry) => {
     try {
         if (!!theme && theme.name !== DEFUALT_THEME_NAME) {
             // Wee need to call the install method even for cached packages, so the require method works whenever we
@@ -110,11 +111,44 @@ export const getLocalTheme = async (theme: IThemeEntry) => {
 
 /**
  *
- * {IThemeEntry} The theme which should be uninstalled - we use the name-property as identifier.
+ * @param theme {IThemeEntry} The theme which should be uninstalled - we use the name-property as identifier.
  */
 export const uninstallTheme = async (theme: IThemeEntry) => {
     try {
         await pluginManager.uninstall(theme.name);
+    } catch (err) {
+        return Promise.reject(err)
+    }
+};
+
+/**
+ *
+ * @param localThemePath {string} The path in the filesystem to the local theme.
+ */
+export const installLocalTheme = async (localThemePath: string): Promise<IThemeEntry> => {
+    try {
+        // check if the directory contains package.json
+        if (!(await fs.promises.stat(path.join(localThemePath, 'package.json')).catch(e => false))) {
+            throw new Error(`Invalid plugin ${localThemePath}, package.json is missing`);
+        }
+        // check if the main entry or index.js expose a render method
+        const packageJsonContent = JSON.parse(await fs.promises.readFile(path.join(localThemePath, 'package.json'), 'utf8'));
+        const mainEntryExports = packageJsonContent && packageJsonContent.main ?
+            await extractExports(path.join(localThemePath, packageJsonContent.main)) :
+            await extractExports(path.join(localThemePath, 'index.js'));
+        if (!mainEntryExports.map(exportsEntry => exportsEntry.name).includes('render')) {
+            throw new Error(`Invalid plugin ${localThemePath}, no valid entry file exposes a render function`);
+        }
+        // everything Ok so far, proceed with the installation
+        const themeInfo = await pluginManager.installFromPath(localThemePath);
+
+        return {
+            name: themeInfo.name,
+            description: packageJsonContent && packageJsonContent.description ? packageJsonContent.description : '',
+            version: themeInfo.version,
+            downloadLink: themeInfo.location,
+            present: true,
+        }
     } catch (err) {
         return Promise.reject(err)
     }

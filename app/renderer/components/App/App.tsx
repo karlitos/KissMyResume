@@ -114,6 +114,31 @@ export default function App()
     };
 
     /**
+     *
+     */
+    const handleSelectLocalThemeClick = () => {
+        if (themeManagerBusy) {
+            return
+        }
+        // set the state of theme-manager-busy to true
+        setThemeManagerBusy(true);
+        window.api.invoke(VALID_INVOKE_CHANNELS['install-local-theme']).then((newTheme:  null | IThemeEntry) => {
+            if (newTheme) {
+                // update the theme list
+                setThemeList([newTheme, ...themeList]);
+                // unselect the uninstalled theme - set to explicit null
+                setSelectedThemeIndex(0)
+            }
+        }).catch((err: PromiseRejectionEvent) => {
+            // display a warning notification
+            setNotifications([...notifications, {type: 'danger', text: `Installing of local theme failed: ${err}`}])
+        }).finally(() => {
+            // set the state of fetching-state-in-progress to false
+            setThemeManagerBusy(false);
+        });
+    };
+
+    /**
      * Theme-list-change handler
      */
     const handleSelectThemeChange = (themeIndex: number) => {
@@ -283,6 +308,9 @@ export default function App()
                         <span className="caret caret-right"></span>
                     </button>
                     <ul className={`${styles['theme-list-container']} dropdown-menu`}>
+                        <li className={`${styles['theme-list-entry']} cursor-pointer`} onClick={handleSelectLocalThemeClick}>
+                            📁 Select and install a local theme
+                        </li>
                         {
                             themeList.map((theme: IThemeEntry, index: number) =>
                                 // Note the explicit unicode white-space characters after the emoji characters
@@ -290,7 +318,7 @@ export default function App()
                                     <span>
                                         {theme.present ? '✅ ' : '📥 '} {theme.name} {theme.description ? '- ' : '' }{theme.description}
                                     </span>
-                                    {theme.present ? <span className="cursor-pointer" onClick={handleUninstallThemeClick.bind(this, index)}>❌</span> : ''}
+                                    {theme.present && theme.name !== 'jsonresume-theme-flat' ? <span className="cursor-pointer" onClick={handleUninstallThemeClick.bind(this, index)}>❌</span> : ''}
                                 </li>
                             )
                         }

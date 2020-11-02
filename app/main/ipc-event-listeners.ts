@@ -3,7 +3,7 @@ import { BrowserView, BrowserWindow, dialog, IpcMainInvokeEvent } from 'electron
 import * as fs from 'fs';
 import * as path from 'path';
 import { createMarkup, exportToMultipleFormats } from '../../lib/build';
-import { uninstallTheme, fetchTheme, getThemeList, getLocalTheme } from './theme-helpers';
+import { installLocalTheme, uninstallTheme, fetchTheme, getThemeList, getlTheme } from './theme-helpers';
 import { logSuccess } from '../../lib/log';
 
 let OFFSCREEN_RENDERER: BrowserWindow;
@@ -73,7 +73,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
                                         selectedFormatsForExport: Record<string, any>, exportCvAfterProcessing: boolean) => {
     try {
         // IDEA: run the theme render fn in sandbox - https://www.npmjs.com/package/vm2
-        const markup = await createMarkup(cvData, await getLocalTheme(theme));
+        const markup = await createMarkup(cvData, await getlTheme(theme));
         // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
         // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
         // alternatively https://github.com/remarkablemark/html-react-parser
@@ -139,7 +139,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
                 }, []);
 
                 // HTML & DOCX export
-                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, await getLocalTheme(theme), 'A4', remainingOutputFormats);
+                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, await getlTheme(theme), 'A4', remainingOutputFormats);
             }
         }
         return Promise.resolve(markup);
@@ -165,7 +165,7 @@ export const getThemeListListener = async () => {
 /**
  * Just a wrapper for the 'fetchTheme' method from theme-helpers, since we define the listeners in this module but all
  * theme-related stuff happens there, so we for example don't need to pass the live-plugin-manager instance reference.
- * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener
+ * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener.
  * @param theme {IThemeEntry} The theme which should be fetched from NPM - we use the name-property as identifier.
  */
 export const fetchThemeListener = async (evt: IpcMainInvokeEvent, theme: IThemeEntry) => {
@@ -178,7 +178,7 @@ export const fetchThemeListener = async (evt: IpcMainInvokeEvent, theme: IThemeE
 
 /**
  *
- * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener
+ * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener.
  * @param theme {IThemeEntry} The theme which should be fetched from NPM - we use the name-property as identifier.
  */
 export const uninstallThemeListener = async (evt: IpcMainInvokeEvent, theme: IThemeEntry) => {
@@ -187,4 +187,27 @@ export const uninstallThemeListener = async (evt: IpcMainInvokeEvent, theme: ITh
     } catch (err) {
         return Promise.reject(err)
     }
+};
+
+/**
+ *
+ * @param evt {IpcMainInvokeEvent} The invoke-event bound to this listener.
+ */
+export const installLocalThemeListener = async (evt: IpcMainInvokeEvent): Promise<null | IThemeEntry> => {
+    try {
+        const openDialogReturnVal = await  dialog.showOpenDialog({
+            title: 'Select the folder with a local theme',
+            properties: ['openDirectory', 'dontAddToRecent']
+        });
+
+        if (openDialogReturnVal && !openDialogReturnVal.canceled) {
+            // Try to install the theme form a local folder
+            return await installLocalTheme(openDialogReturnVal.filePaths[0]);
+        }
+        // Return null if no data loaded
+        return null;
+    } catch (err) {
+        return Promise.reject(`An error occurred when opening the CV data: ${err}`);
+    }
+    return null;
 };

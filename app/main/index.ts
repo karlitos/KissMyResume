@@ -2,6 +2,7 @@ import { app, BrowserView, BrowserWindow, ipcMain, screen } from 'electron';
 import { VALID_INVOKE_CHANNELS } from '../definitions';
 import { PREVIEW_DEFAULT_MARKUP } from './preview'
 import {
+  installLocalThemeListener,
   uninstallThemeListener,
   fetchThemeListener,
   getThemeListListener,
@@ -106,3 +107,5 @@ ipcMain.handle(VALID_INVOKE_CHANNELS['get-theme-list'], getThemeListListener);
 ipcMain.handle(VALID_INVOKE_CHANNELS['fetch-theme'], fetchThemeListener);
 
 ipcMain.handle(VALID_INVOKE_CHANNELS['uninstall-theme'], uninstallThemeListener);
+
+ipcMain.handle(VALID_INVOKE_CHANNELS['install-local-theme'], installLocalThemeListener);
