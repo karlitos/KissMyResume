@@ -92,7 +92,7 @@
   },
   "dependencies": {
     "@caporal/core": "^2.0.2",
-    "@rjsf/core": "^2.2.2",
+    "@rjsf/core": "^2.4.0",
     "bootstrap3": "^3.3.5",
     "chalk": "^2.4.2",
     "electron-squirrel-startup": "^1.0.0",
