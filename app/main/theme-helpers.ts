@@ -30,6 +30,7 @@ const pluginManager = new PluginManager({
                 http: require('http'),
                 https: require('https'),
                 url: require('url'),
+                querystring: require('querystring'),
             }
         });
 
