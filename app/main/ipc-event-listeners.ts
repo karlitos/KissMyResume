@@ -72,8 +72,9 @@ export const saveCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<str
 export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<string, any>, theme: IThemeEntry,
                                         selectedFormatsForExport: Record<string, any>, exportCvAfterProcessing: boolean) => {
     try {
+        const themeModule = await getlTheme(theme);
         // IDEA: run the theme render fn in sandbox - https://www.npmjs.com/package/vm2
-        const markup = await createMarkup(cvData, await getlTheme(theme));
+        const markup = await createMarkup(cvData, themeModule);
         // setting of the preview content via loadURL with  data-uri encoded markup is not the most robust solutions. It might
         // be necessary to go with file-based buffering, see https://github.com/electron/electron/issues/1146#issuecomment-591983815
         // alternatively https://github.com/remarkablemark/html-react-parser
@@ -139,7 +140,7 @@ export const processCvListener = async (evt: IpcMainInvokeEvent, cvData: Record<
                 }, []);
 
                 // HTML & DOCX export
-                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, await getlTheme(theme), 'A4', remainingOutputFormats);
+                await exportToMultipleFormats(markup, parsedFilePath.name, parsedFilePath.dir, themeModule, 'A4', remainingOutputFormats);
             }
         }
         return Promise.resolve(markup);
