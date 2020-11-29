@@ -1,0 +1,319 @@
+{
+  "basics": {
+    "name": "Karel Mácha",
+    "label": "Professional Full Stack Web Developer",
+    "summary": "German coming originally from Czech Republic. Professional Web Developer. Open-Source supporter and occasional contributor. Software architecture and DevOps enthusiast with a one good eye for pixel-perfect design.\n  \n  \"Happy are those who dream dreams and are ready to pay the price to make them come true.\"  _Leon J. Suenes_",
+    "website": "http://www.karlitos.net",
+    "phone": "0049-1577-1570188",
+    "email": "karel.macha@karlitos.net",
+    "picture": "/Users/kmacha/Documents/Passfoto.jpg",
+    "location": {
+      "address": "Arnulfstraße 108",
+      "postalCode": "12105",
+      "city": "Berlin",
+      "countryCode": "DE",
+      "region": ""
+    },
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "karlitos",
+        "url": "https://github.com/karlitos"
+      },
+      {
+        "network": "Stack-Overflow",
+        "username": "karlitos",
+        "url": "https://stackoverflow.com/users/1991697/karlitos"
+      }
+    ]
+  },
+  "work": [
+    {
+      "company": "Westernacher Solutions GmbH",
+      "website": "https://westernacher-solutions.com/",
+      "position": "Senior Solutions Engineer Full-Stack (Java/JavaScript/Angular.js/Node.js)",
+      "startDate": "2018-05",
+      "endDate": "2020-11",
+      "summary": "Development of special communication platforms (_besondere elektronische Notarpostfach_/_besondere elektronische Anwaltspostfach_) for notary and lawyer offices in Germany.",
+      "highlights": [
+        "Implementation of new features according to the customer specification.",
+        "Improvement and enhancement of the development and CI processes.",
+        "Bug fixes and optimization of the consisting code base in Front-End and Back-End."
+      ]
+    },
+    {
+      "company": "GHT Mobility GmbH / CleverShuttle",
+      "website": "https://www.clevershuttle.de/",
+      "position": "Full-Stack Web Developer (JAVA/JavaScript/Vue.js/Leaflet/React)",
+      "startDate": "2017-05",
+      "endDate": "2018-05",
+      "summary": "Development of REST-APIs and internal web applications",
+      "highlights": [
+        "Concept and development of interactive editor and configuration-server for administration of operating areas.",
+        "Concept and development of driver-administration web application.",
+        "Concept and development of service-monitoring display."
+      ]
+    },
+    {
+      "company": "HERE Technologies",
+      "website": "https://www.here.com/",
+      "position": "Front-End Developer (JavaScript/AngularJS/Node.js)",
+      "startDate": "2016-09",
+      "endDate": "2017-03",
+      "summary": "Maintenance and enhancement of HERE WeGo web application",
+      "highlights": [
+        "Application maintenance, trouble shooting and issue resolution.",
+        "Improving monetization performance, SEO, user-base enhancement"
+      ]
+    },
+    {
+      "company": "Bettinganalytics",
+      "position": "Co-founder & Full-Stack Developer (Meteor/React/MongoDB)",
+      "startDate": "2016-06",
+      "endDate": "2016-09",
+      "summary": "Co-founder, Web application development.",
+      "highlights": [
+        "Concept, design and development of the Front-End UI",
+        "Concept, and development of Back-End services and user-management",
+        "Concept and development of APIs for services computing betting predictions."
+      ]
+    },
+    {
+      "company": "German Archeological Institute",
+      "website": "https://www.dainst.org",
+      "position": "Software Developer (Java/Python/Java)",
+      "startDate": "2015-07",
+      "endDate": "2016-07",
+      "summary": "Development of an nation-wide archival system for archeology and ancient studies.",
+      "highlights": [
+        "Concept, and development of archival system.",
+        "Support at adoption of agile development methods."
+      ]
+    },
+    {
+      "company": "hnw-Deutschland GmbH",
+      "website": "www.health-network.de",
+      "position": "Product and software development manager",
+      "startDate": "2015-01",
+      "endDate": "2015-03",
+      "summary": "Enhancement of the health- network platform.",
+      "highlights": [
+        "Support-management and maintenance of the health-network services.",
+        "On-site customer support."
+      ]
+    },
+    {
+      "company": "Leibniz Institute for agricultural engineering",
+      "website": "https://www.atb-potsdam.de",
+      "position": "Technician/Software Developer (C/C++/Python)",
+      "startDate": "2014-08",
+      "endDate": "2014-12",
+      "summary": "Development of a Linux- based, network-capable multi-camera-system.",
+      "highlights": [
+        "Finalizing and optimization of multi-camera-system using unbuffered cameras.",
+        "Development of control software for remote controlling and management."
+      ]
+    },
+    {
+      "company": "Ada Health GmbH (ex medx GmbH)",
+      "website": "https://ada.com (https://medx.net)",
+      "position": "Software Developer (JAVA/JavaScript/D3.js)",
+      "startDate": "2012-06",
+      "endDate": "2014-03",
+      "summary": "Analysis and visualization of medical data.",
+      "highlights": [
+        "Concept and development of interactive, web-based visualization for connected medical data",
+        "Development of XML data parser for analysis of medical thesaurus."
+      ]
+    },
+    {
+      "company": "Charité - Universitätsmedizin (university hospital)",
+      "website": "http://bioinformatics.charite.de",
+      "position": "Research Assistant (doctoral student)",
+      "startDate": "2011-08",
+      "endDate": "2012-03",
+      "summary": "Development and enhancement of web-based databases for structural ",
+      "highlights": [
+        "Enhancement and development of the database front-end.",
+        "Optimization and enhancement of underlying data sources."
+      ]
+    },
+    {
+      "company": "Thüringer Universitäts– und Landes- bibliothek (university library)",
+      "website": "https://www.thulb.uni-jena.de/",
+      "position": "Research Assistant (student assistant)",
+      "startDate": "2006",
+      "endDate": "2009",
+      "summary": "Development of software for image processing and digitization of book inventories."
+    }
+  ],
+  "education": [
+    {
+      "institution": "TÜV SÜD Akademie",
+      "area": "Agile project management",
+      "studyType": "Certification",
+      "courses": [
+        "ITEMO Professional SCRUM Master",
+        "Agile project management according to SCRUM"
+      ],
+      "startDate": "2018",
+      "endDate": "2018"
+    },
+    {
+      "institution": "Friedrich-Schiller-University",
+      "gpa": "1.3",
+      "area": "Bioinformatics",
+      "studyType": "Diploma (ISCED 5A)",
+      "courses": [
+        "__Bioinformatics__ - Algorithmic phylogenetics, Bioinformatic methods in genomics, Biosystemanalysis, Database systems, Molecular computing,  Evolutionary principles",
+        "__Biology__ - Biomarker, Structural biology, Medical ethics",
+        "__Biochemistry and Molecular Biology__ - Biological rhythms and molecular clocks, Photobiology, Modeling metabolic systems",
+        "__Informatics__ - Parallel algorithms, Digital electronics / Digital circuits",
+        "__Informatics and Mathematics__ - Image Processing / Computer Vision"
+      ],
+      "endDate": "2011"
+    },
+    {
+      "institution": "Gymnázium Na Pražačce (German and Czech high-school Prague)",
+      "area": "Secondary education",
+      "studyType": "High-school with government licensing examination in German language (C1)",
+      "endDate": "2003"
+    },
+    {
+      "institution": "Von Saldern-Gymnasium (Brandenburg)",
+      "area": "Secondary education",
+      "studyType": "Student exchange-program",
+      "startDate": "2000",
+      "endDate": "2001"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Web Development",
+      "level": "master",
+      "keywords": [
+        "JavaScript",
+        "TypeScript",
+        "HTML 5",
+        "React",
+        "Vue.js",
+        "Angular(.js)",
+        "Node.js",
+        "Meteor",
+        "Electron",
+        "Sass",
+        "LESS"
+      ]
+    },
+    {
+      "name": "Back-End Services",
+      "level": "advanced",
+      "keywords": [
+        "Express",
+        "Socket.IO",
+        "Java - Spring Boot",
+        "MongoDB",
+        "MySQL/PostgreSQL",
+        "Oracle Database"
+      ]
+    },
+    {
+      "name": "Interactive Data Visualization",
+      "level": "master",
+      "keywords": [
+        "D3.js",
+        "SVG",
+        "Leaflet & Mapbox",
+        "Cytoscape",
+        "Graph drawing, Infographic Layouts"
+      ]
+    },
+    {
+      "name": "TDD - DevOps",
+      "level": "advanced",
+      "keywords": [
+        "Karma",
+        "Jasmine",
+        "Mocha",
+        "Sinon",
+        "Jest",
+        "JUnit",
+        "Maven",
+        "Webpack",
+        "Gulp",
+        "GitLab",
+        "Jenkins",
+        "Bamboo",
+        "Ansible"
+      ]
+    }
+  ],
+  "publications": [
+    {
+      "name": "Supertarget goes quantitative: update on drug–target interactions",
+      "publisher": "Nucleic Acids Research",
+      "releaseDate": "2011-11",
+      "website": "https://doi.org/10.1093/nar/gkr912",
+      "summary": "Participation in a scientific publication."
+    },
+    {
+      "name": "A novel method for achieving an optimal classification of the proteinogenic amino acids",
+      "publisher": "Scientific Reports",
+      "releaseDate": "2020-09",
+      "website": "https://doi.org/10.1038/s41598-020-72174-5",
+      "summary": "Scientific publication based on my original research done as part of my diploma thesis."
+    }
+  ],
+  "interests": [
+    {
+      "name": "Technology & electronics",
+      "summary": "Tinkering with devices and gadgets, robotics and home automation.",
+      "keywords": [
+        "Raspberry Pi",
+        "Arduino",
+        "Digital electronics",
+        "Electrical engineering",
+        "Robotics"
+      ]
+    },
+    {
+      "name": "Sport in general",
+      "summary": "Trying to get in shape and improve the overall fitness.",
+      "keywords": [
+        "Working out",
+        "FitX",
+        "Jogging",
+        "Swimming",
+        "Volleyball",
+        "Skating & Scooting"
+      ]
+    },
+    {
+      "name": "Traveling & Outdoor",
+      "summary": "Hiking, rock climbing, exploring and trips in the nature.",
+      "keywords": [
+        "Camino de Santiago",
+        "On the way in the city or nature with my TrailSkates TM and foldable electric kick-scooter.",
+        "Alternative urban transportation"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "Czech",
+      "fluency": "Native proficiency"
+    },
+    {
+      "language": "German",
+      "fluency": "Bilingual proficiency"
+    },
+    {
+      "language": "English",
+      "fluency": "Professional working proficiency"
+    },
+    {
+      "language": "French,Spanish",
+      "fluency": "Elementary proficiency"
+    }
+  ]
+}

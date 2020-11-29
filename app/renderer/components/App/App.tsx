@@ -1,10 +1,11 @@
 import React,  { useState, useRef, Fragment, ChangeEvent, SyntheticEvent } from 'react';
-import Form, {IChangeEvent, ISubmitEvent} from '@rjsf/core';
-import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json'
-import JSON_RESUME_SCHEMA from '../../../../schemes/json-resume-schema_0.0.0.json'
-import { VALID_INVOKE_CHANNELS, INotification, IThemeEntry } from '../../../definitions'
-import styles from './App.css'
+import Form, { IChangeEvent, ISubmitEvent } from '@rjsf/core';
+import metaSchemaDraft04 from 'ajv/lib/refs/json-schema-draft-04.json';
+import JSON_RESUME_SCHEMA from 'resume-schema/schema.json'
+import { VALID_INVOKE_CHANNELS, INotification, IThemeEntry } from '../../../definitions';
+import styles from './App.css';
 import { useThemeList } from '../../hooks/useThemeList';
+
 
 // read https://github.com/async-library/react-async
 export default function App()
@@ -12,7 +13,7 @@ export default function App()
     /**
      * State - Hooks
      */
-    const [schema , setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
+    const [schema, setSchema] = useState(JSON_RESUME_SCHEMA as Record<string, any>);
     const [cvData, setCvData] = useState({});
     const [notifications, setNotifications] = useState<Array<INotification>>([]);
     const [themeListFetchingError, themeList, setThemeList] = useThemeList();
